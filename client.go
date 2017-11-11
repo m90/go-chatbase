@@ -1,10 +1,10 @@
 package chatbase
 
-// Client wraps a chatbase API Key and can be used to
+// Client wraps a Chatbase API Key and can be used to
 // collect and submit messages and events
 type Client string
 
-// NewClient returns a new Client using the given chatbase API Key
+// NewClient returns a new Client using the given Chatbase API Key
 func NewClient(apiKey string) *Client {
 	c := Client(apiKey)
 	return &c

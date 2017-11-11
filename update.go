@@ -22,31 +22,31 @@ type Update struct {
 	Version    string `json:"version,omitempty"`
 }
 
-// SetIntent adds an optional intent value
+// SetIntent adds an optional intent value to update
 func (u *Update) SetIntent(i string) *Update {
 	u.Intent = i
 	return u
 }
 
-// SetNotHandled adds an optional not handled value
+// SetNotHandled adds an optional not handled value to update
 func (u *Update) SetNotHandled(n string) *Update {
 	u.NotHandled = n
 	return u
 }
 
-// SetFeedback adds an optional feedback value
+// SetFeedback adds an optional feedback value to update
 func (u *Update) SetFeedback(f string) *Update {
 	u.Feedback = f
 	return u
 }
 
-// SetVersion adds an optional version value
+// SetVersion adds an optional version value to update
 func (u *Update) SetVersion(v string) *Update {
 	u.Version = v
 	return u
 }
 
-// Submit tries to deliver the update to chatbase
+// Submit tries to deliver the update to Chatbase
 func (u *Update) Submit() (*UpdateResponse, error) {
 	payload, payloadErr := json.Marshal(u)
 	if payloadErr != nil {
@@ -88,7 +88,7 @@ func (u *Update) Submit() (*UpdateResponse, error) {
 	return &responseData, nil
 }
 
-// UpdateResponse describes a service response to an update
+// UpdateResponse describes a Chatbase response to an update
 type UpdateResponse struct {
 	Error   []string `json:"error"`
 	Updated []string `json:"updated"`

@@ -41,11 +41,15 @@ func (e *Event) SetVersion(v string) *Event {
 	return e
 }
 
-// AddProperty adds a new property to the event using the given name and value
-func (e *Event) AddProperty(name string, value interface{}) *Event {
-	prop, _ := NewEventProperty(name, value)
+// AddProperty adds a new property to the event using the given name and value.
+// The passed value needs to be one of `int`, `string`, `bool` or `float64`
+func (e *Event) AddProperty(name string, value interface{}) error {
+	prop, err := NewEventProperty(name, value)
+	if err != nil {
+		return err
+	}
 	e.Properties = append(e.Properties, prop)
-	return e
+	return nil
 }
 
 func postEvent(endpoint string, v interface{}) error {
@@ -65,7 +69,7 @@ func postEvent(endpoint string, v interface{}) error {
 	return nil
 }
 
-// Submit tries to deliver the set of events to chatbase
+// Submit tries to deliver the set of events to Chatbase
 func (e *Event) Submit() error {
 	return postEvent(eventEndpoint, e)
 }
@@ -73,7 +77,7 @@ func (e *Event) Submit() error {
 // Events is a collection of Event
 type Events []Event
 
-// Submit tries to deliver the set of events to chatbase
+// Submit tries to deliver the set of events to Chatbase
 func (e *Events) Submit() error {
 	return postEvent(eventsEndpoint, e)
 }
@@ -94,7 +98,8 @@ type EventProperty struct {
 }
 
 // NewEventProperty generates an EventProperty containing the correctly
-// typed field for the passed value
+// typed field for the passed value. The passed value needs to be one of
+// `int`, `string`, `bool` or `float64`
 func NewEventProperty(name string, value interface{}) (EventProperty, error) {
 	p := EventProperty{Name: name}
 	if s, ok := value.(string); ok {

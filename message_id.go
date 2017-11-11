@@ -6,11 +6,11 @@ import (
 	"strconv"
 )
 
-// MessageID normalizes the IDs sent by chatbase
+// MessageID normalizes the IDs sent by Chatbase
 type MessageID string
 
 // UnmarshalJSON distinguishes ints and strings and normalizes
-// both values to a string representation
+// both values into a string representation
 func (m *MessageID) UnmarshalJSON(b []byte) error {
 	var i int
 	if err := json.Unmarshal(b, &i); err == nil {

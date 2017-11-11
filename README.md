@@ -15,10 +15,10 @@ $ go get github.com/m90/go-chatbase
 
 ## Example
 
-This is how you would send a single message to Chatbase:
+Send a single message to Chatbase:
 
 ```go
-// a client is a wrapper around chatbase API key
+// a client is a wrapper around an chatbase API key
 client := chatbase.NewClient("MY-API-KEY")
 
 // calling Message requires passing of all required values
@@ -66,7 +66,7 @@ if err != nil || !response.Status.OK() {
 }
 ```
 
-#### `Updates`
+#### `Update`
 
 ```go
 update := client.Update("ID-OF-MESSAGE-TO-UPDATE")

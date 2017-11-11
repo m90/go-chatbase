@@ -113,9 +113,27 @@ func TestEvent_SetProperty(t *testing.T) {
 				{Name: "three", FloatValue: 3.333},
 			},
 		}
-		e.AddProperty("one", "one").AddProperty("two", 2).AddProperty("three", 3.333)
+		if err := e.AddProperty("one", "one"); err != nil {
+			t.Errorf("Unexpected error %v", err)
+		}
+		if err := e.AddProperty("two", 2); err != nil {
+			t.Errorf("Unexpected error %v", err)
+		}
+		if err := e.AddProperty("three", 3.333); err != nil {
+			t.Errorf("Unexpected error %v", err)
+		}
 		if !reflect.DeepEqual(expected, e) {
 			t.Errorf("Expected %v, got %v", expected, e)
+		}
+	})
+	t.Run("error", func(t *testing.T) {
+		e := Event{
+			APIKey: "foo-bar-baz",
+			UserID: "abc-123",
+			Intent: "test-things",
+		}
+		if err := e.AddProperty("nope", []int{99}); err == nil {
+			t.Error("Expected error, got nil")
 		}
 	})
 }

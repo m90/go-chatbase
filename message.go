@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-// Types of messages used to identify the origin of
-// a message in chatbase
+// types of messages used to identify the origin of
+// a message in Chatbase
 const (
 	MessageTypeUser  = "user"
 	MessageTypeAgent = "agent"
@@ -19,7 +19,7 @@ var (
 	messagesEndpoint = "https://chatbase.com/api/messages"
 )
 
-// Message contains info about a platform agnostic chat message
+// Message contains info about a generic chat message
 type Message struct {
 	APIKey     string `json:"api_key"`
 	Type       string `json:"type"`
@@ -63,7 +63,7 @@ func (msg *Message) SetVersion(v string) *Message {
 	return msg
 }
 
-// SetTimeStamp overrides the initial timestamp value
+// SetTimeStamp overrides the message's timestamp value
 func (msg *Message) SetTimeStamp(t int) *Message {
 	msg.TimeStamp = t
 	return msg
@@ -84,7 +84,7 @@ func postMessage(v interface{}) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
-// Submit tries to deliver the set of messages to chatbase
+// Submit tries to deliver the message to Chatbase
 func (msg *Message) Submit() (*MessageResponse, error) {
 	body, err := postMessage(msg)
 	if err != nil {
@@ -98,7 +98,8 @@ func (msg *Message) Submit() (*MessageResponse, error) {
 	return &responseData, nil
 }
 
-// MessageResponse describes an API response to sending a single message
+// MessageResponse describes a Chatbase response to sending a single message
+// or is contained in a set of responses when performing batch operations
 type MessageResponse struct {
 	MessageID MessageID `json:"message_id"`
 	Status    Status    `json:"status"`
@@ -107,7 +108,7 @@ type MessageResponse struct {
 // Messages is a collection of Message
 type Messages []Message
 
-// Submit tries to deliver the set of messages to chatbase
+// Submit tries to deliver the set of messages to Chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
 	body, err := postMessage(m)
 	if err != nil {
@@ -127,7 +128,7 @@ func (m *Messages) Append(addition *Message) *Messages {
 	return m
 }
 
-// MessagesResponse describes an API response to sending multiple messages at once
+// MessagesResponse describes a Chatbase response to sending multiple messages at once
 type MessagesResponse struct {
 	AllSucceded bool              `json:"all_succeeded"`
 	Status      Status            `json:"status"`
