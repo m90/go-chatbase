@@ -36,11 +36,19 @@ func (c *Client) NewAgentMessage(userID, platform string) *Message {
 	return c.NewMessage(MessageTypeAgent, userID, platform)
 }
 
-// NewEvent creates a new Event using the client's chatbase API Key
+// NewEvent creates a new Event using the client's API Key
 func (c *Client) NewEvent(userID, intent string) *Event {
 	return &Event{
 		APIKey: c.String(),
 		UserID: userID,
 		Intent: intent,
+	}
+}
+
+// NewUpdate creates a new Update using the client's API key
+func (c *Client) NewUpdate(messageID string) *Update {
+	return &Update{
+		APIKey:    c.String(),
+		MessageID: messageID,
 	}
 }
