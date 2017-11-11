@@ -21,7 +21,7 @@ func TestMessage_Setters(t *testing.T) {
 			APIKey:     "secret",
 			Type:       MessageTypeAgent,
 			UserID:     "abc-123",
-			TimeStamp:  998877,
+			TimeStamp:  111444,
 			Platform:   "test",
 			Message:    "Hello world!",
 			Intent:     "test-things",
@@ -29,7 +29,7 @@ func TestMessage_Setters(t *testing.T) {
 			Feedback:   true,
 			Version:    "1.2.34",
 		}
-		m.SetMessage("Hello world!").SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.2.34")
+		m.SetMessage("Hello world!").SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.2.34").SetTimeStamp(111444)
 		if !reflect.DeepEqual(expected, m) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
 		}

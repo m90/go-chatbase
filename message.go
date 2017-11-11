@@ -63,6 +63,12 @@ func (msg *Message) SetVersion(v string) *Message {
 	return msg
 }
 
+// SetTimeStamp overrides the initial timestamp value
+func (msg *Message) SetTimeStamp(t int) *Message {
+	msg.TimeStamp = t
+	return msg
+}
+
 func postMessage(v interface{}) (io.ReadCloser, error) {
 	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
