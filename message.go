@@ -34,39 +34,39 @@ type Message struct {
 }
 
 // SetMessage adds an optional message value
-func (msg *Message) SetMessage(m string) *Message {
-	msg.Message = m
-	return msg
+func (m *Message) SetMessage(msg string) *Message {
+	m.Message = msg
+	return m
 }
 
 // SetIntent adds an optional intent value
-func (msg *Message) SetIntent(i string) *Message {
-	msg.Intent = i
-	return msg
+func (m *Message) SetIntent(i string) *Message {
+	m.Intent = i
+	return m
 }
 
 // SetNotHandled adds an optional not handled flag
-func (msg *Message) SetNotHandled(n bool) *Message {
-	msg.NotHandled = n
-	return msg
+func (m *Message) SetNotHandled(n bool) *Message {
+	m.NotHandled = n
+	return m
 }
 
 // SetFeedback adds an optional not feedback flag
-func (msg *Message) SetFeedback(f bool) *Message {
-	msg.Feedback = f
-	return msg
+func (m *Message) SetFeedback(f bool) *Message {
+	m.Feedback = f
+	return m
 }
 
 // SetVersion adds an optional version value
-func (msg *Message) SetVersion(v string) *Message {
-	msg.Version = v
-	return msg
+func (m *Message) SetVersion(v string) *Message {
+	m.Version = v
+	return m
 }
 
 // SetTimeStamp overrides the message's timestamp value
-func (msg *Message) SetTimeStamp(t int) *Message {
-	msg.TimeStamp = t
-	return msg
+func (m *Message) SetTimeStamp(t int) *Message {
+	m.TimeStamp = t
+	return m
 }
 
 func postMessage(v interface{}) (io.ReadCloser, error) {
@@ -85,8 +85,8 @@ func postMessage(v interface{}) (io.ReadCloser, error) {
 }
 
 // Submit tries to deliver the message to Chatbase
-func (msg *Message) Submit() (*MessageResponse, error) {
-	body, err := postMessage(msg)
+func (m *Message) Submit() (*MessageResponse, error) {
+	body, err := postMessage(m)
 	if err != nil {
 		return nil, err
 	}
