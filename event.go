@@ -78,6 +78,12 @@ func (e *Events) Submit() error {
 	return postEvent(eventsEndpoint, e)
 }
 
+// Append adds an event to the the collection
+func (e *Events) Append(addition *Event) *Events {
+	*e = append(*e, *addition)
+	return e
+}
+
 // EventProperty is a property that is attached to an event
 type EventProperty struct {
 	Name         string  `json:"property_name"`

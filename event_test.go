@@ -269,3 +269,14 @@ func TestSubmit_Events(t *testing.T) {
 		})
 	}
 }
+
+func TestAppend_Events(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		evs := Events{}
+		evs.Append(&Event{APIKey: "foo-bar", UserID: "bar-foo"})
+		expected := Events{{APIKey: "foo-bar", UserID: "bar-foo"}}
+		if !reflect.DeepEqual(expected, evs) {
+			t.Errorf("Expected %#v, got %#v", expected, evs)
+		}
+	})
+}

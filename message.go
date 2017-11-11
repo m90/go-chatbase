@@ -121,6 +121,12 @@ func (m *Messages) Submit() (*MessagesResponse, error) {
 	return &responseData, nil
 }
 
+// Append adds a message to the the collection
+func (m *Messages) Append(addition *Message) *Messages {
+	*m = append(*m, *addition)
+	return m
+}
+
 // MessagesResponse describes an API response to sending multiple messages at once
 type MessagesResponse struct {
 	AllSucceded bool              `json:"all_succeeded"`

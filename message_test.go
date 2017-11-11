@@ -171,3 +171,14 @@ func TestSubmit_Messages(t *testing.T) {
 		})
 	}
 }
+
+func TestMessage_Append(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		msgs := Messages{}
+		msgs.Append(&Message{APIKey: "foo-bar", UserID: "bar-foo"})
+		expected := Messages{{APIKey: "foo-bar", UserID: "bar-foo"}}
+		if !reflect.DeepEqual(expected, msgs) {
+			t.Errorf("Expected %#v, got %#v", expected, msgs)
+		}
+	})
+}
