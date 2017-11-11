@@ -1,0 +1,14 @@
+{
+	"all_succeeded": true,
+	"responses": [
+		{
+			"message_id": 123456789,
+			"status": "success"
+		},
+		{
+			"message_id": 987654321,
+			"status": "success"
+		}
+	],
+	"status": 200
+}

@@ -72,6 +72,9 @@ func postMessage(v interface{}) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+	if res.StatusCode >= http.StatusInternalServerError {
+		return nil, fmt.Errorf("request failed with status %v", res.StatusCode)
+	}
 	return res.Body, nil
 }
 
@@ -86,16 +89,13 @@ func (msg *Message) Submit() (*MessageResponse, error) {
 	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
 		return nil, err
 	}
-	if !responseData.Status.OK() {
-		return nil, fmt.Errorf("failed sending messages with status %v", responseData.Status.OK())
-	}
 	return &responseData, nil
 }
 
 // MessageResponse describes an API response to sending a single message
 type MessageResponse struct {
-	MessageID string `json:"message_id"`
-	Status    Status `json:"status"`
+	MessageID MessageID `json:"message_id"`
+	Status    Status    `json:"status"`
 }
 
 // Messages is a collection of Message
@@ -111,9 +111,6 @@ func (m *Messages) Submit() (*MessagesResponse, error) {
 	responseData := MessagesResponse{}
 	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
 		return nil, err
-	}
-	if !responseData.AllSucceded {
-		return nil, fmt.Errorf("failed sending messages with status %v", responseData.Status)
 	}
 	return &responseData, nil
 }
