@@ -1,2 +1,2 @@
 # go-chatbase
-Golang client for interacting with the chatbase.com API
+> Golang client for interacting with the chatbase.com API
