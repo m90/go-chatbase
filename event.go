@@ -48,14 +48,13 @@ func (e *Event) AddProperty(name string, value interface{}) *Event {
 	return e
 }
 
-// Submit tries to deliver the set of events to chatbase
-func (e *Event) Submit() error {
-	payload, payloadErr := json.Marshal(e)
+func postEvent(endpoint string, v interface{}) error {
+	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
 		return payloadErr
 	}
 
-	res, err := http.Post(eventEndpoint, "application/json", bytes.NewBuffer(payload))
+	res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
@@ -66,25 +65,17 @@ func (e *Event) Submit() error {
 	return nil
 }
 
+// Submit tries to deliver the set of events to chatbase
+func (e *Event) Submit() error {
+	return postEvent(eventEndpoint, e)
+}
+
 // Events is a collection of Event
 type Events []Event
 
 // Submit tries to deliver the set of events to chatbase
 func (e *Events) Submit() error {
-	payload, payloadErr := json.Marshal(e)
-	if payloadErr != nil {
-		return payloadErr
-	}
-
-	res, err := http.Post(eventsEndpoint, "application/json", bytes.NewBuffer(payload))
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	if res.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("request failed with status %v", res.StatusCode)
-	}
-	return nil
+	return postEvent(eventsEndpoint, e)
 }
 
 // EventProperty is a property that is attached to an event

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -62,20 +63,27 @@ func (msg *Message) SetVersion(v string) *Message {
 	return msg
 }
 
-// Submit tries to deliver the set of messages to chatbase
-func (msg *Message) Submit() (*MessageResponse, error) {
-	payload, payloadErr := json.Marshal(msg)
+func postMessage(v interface{}) (io.ReadCloser, error) {
+	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
 		return nil, payloadErr
 	}
-
 	res, err := http.Post(messagesEndpoint, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	return res.Body, nil
+}
+
+// Submit tries to deliver the set of messages to chatbase
+func (msg *Message) Submit() (*MessageResponse, error) {
+	body, err := postMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
 	responseData := MessageResponse{}
-	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
 		return nil, err
 	}
 	if !responseData.Status.OK() {
@@ -95,18 +103,13 @@ type Messages []Message
 
 // Submit tries to deliver the set of messages to chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
-	payload, payloadErr := json.Marshal(m)
-	if payloadErr != nil {
-		return nil, payloadErr
-	}
-
-	res, err := http.Post(messagesEndpoint, "application/json", bytes.NewBuffer(payload))
+	body, err := postMessage(m)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer body.Close()
 	responseData := MessagesResponse{}
-	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
 		return nil, err
 	}
 	if !responseData.AllSucceded {
