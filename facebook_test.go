@@ -162,3 +162,84 @@ func TestFacebookMessage_Submit(t *testing.T) {
 		})
 	}
 }
+func TestFacebookMessages_Submit(t *testing.T) {
+	tests := []struct {
+		name             string
+		handler          http.Handler
+		messages         FacebookMessages
+		expectError      bool
+		expectedResponse *MessagesResponse
+	}{
+		{
+			"default",
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Query().Get("api_key") != "top-secret" {
+					http.Error(w, "missing api key", http.StatusBadRequest)
+					return
+				}
+				body, bodyErr := ioutil.ReadAll(r.Body)
+				if bodyErr != nil {
+					http.Error(w, "bad payload", http.StatusInternalServerError)
+					return
+				}
+				r.Body.Close()
+				s := string(body)
+				if !strings.Contains(s, `"recipient":"zuck"`) {
+					http.Error(w, "missing data from payload", http.StatusBadRequest)
+					return
+				}
+				b, _ := ioutil.ReadFile("testdata/messages_response_ok.json")
+				w.Write(b)
+			}),
+			FacebookMessages{
+				{
+					APIKey: "top-secret",
+					Payload: map[string]string{
+						"recipient": "zuck",
+					},
+				},
+				{
+					APIKey: "top-secret",
+					Payload: map[string]string{
+						"recipient": "bill",
+					},
+				},
+			},
+			false,
+			&MessagesResponse{
+				AllSucceded: true,
+				Responses: []MessageResponse{
+					{MessageID: "123456789", Status: true},
+					{MessageID: "987654321", Status: true},
+				},
+				Status: true,
+			},
+		},
+		{
+			"empty",
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte("OK!"))
+			}),
+			FacebookMessages{},
+			true,
+			nil,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			oldEndpoint := facebookMessagesEndpoint
+			defer func() { facebookMessagesEndpoint = oldEndpoint }()
+
+			ts := httptest.NewServer(test.handler)
+			facebookMessagesEndpoint = ts.URL
+
+			res, err := test.messages.Submit()
+			if test.expectError != (err != nil) {
+				t.Errorf("Unexpected error value %v", err)
+			}
+			if !reflect.DeepEqual(test.expectedResponse, res) {
+				t.Errorf("Expected %#v, got %#v", test.expectedResponse, res)
+			}
+		})
+	}
+}

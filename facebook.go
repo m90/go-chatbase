@@ -1,12 +1,17 @@
 package chatbase
 
-import "encoding/json"
-import "net/url"
-import "net/http"
-import "bytes"
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"io"
+	"net/http"
+	"net/url"
+)
 
 var (
-	facebookMessageEndpoint = "https://chatbase.com/api/facebook/message_received"
+	facebookMessageEndpoint  = "https://chatbase.com/api/facebook/message_received"
+	facebookMessagesEndpoint = "https://chatbase.com/api/facebook/message_received_batch"
 )
 
 // FacebookFields contains metadata about a native Facebook message
@@ -79,23 +84,58 @@ func (f *FacebookMessage) SetVersion(v string) *FacebookMessage {
 
 // Submit tries to deliver a single Facebook message to chatbase
 func (f *FacebookMessage) Submit() (*MessageResponse, error) {
-	payload, payloadErr := json.Marshal(*f)
+	body, err := postFacebook(facebookMessageEndpoint, f.APIKey, f)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessageResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+// FacebookMessages is a collection of Facecbook Message
+type FacebookMessages []FacebookMessage
+
+// Append adds the additional message to the collection
+func (f *FacebookMessages) Append(addition *FacebookMessage) *FacebookMessages {
+	*f = append(*f, *addition)
+	return f
+}
+
+// Submit tries to deliver the set of messages to chatbase
+func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
+	if len(*f) == 0 {
+		return nil, errors.New("cannot submit empty collection")
+	}
+	apiKey := (*f)[0].APIKey
+	body, err := postFacebook(facebookMessagesEndpoint, apiKey, f)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessagesResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
+	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
 		return nil, payloadErr
 	}
-	u, uErr := url.Parse(facebookMessageEndpoint)
+	u, uErr := url.Parse(endpoint)
 	if uErr != nil {
 		return nil, uErr
 	}
-	u.RawQuery = url.Values{"api_key": []string{f.APIKey}}.Encode()
+	u.RawQuery = url.Values{"api_key": []string{apiKey}}.Encode()
 	res, err := http.Post(u.String(), "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
-	responseData := MessageResponse{}
-	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return res.Body, nil
 }

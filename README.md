@@ -92,6 +92,21 @@ if err != nil || !response.Status.OK() {
 }
 ```
 
+#### `FacebookMessages`
+
+```go
+messages := chatbase.FacebookMessages{}
+for _, msg := range listOfFacebookMessages {
+	message := client.FacebookMessage(msg).SetVersion("0.0.1-beta")
+	messages.Append(message)
+}
+
+response, err := messages.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
 ### Events API
 
 The [Events API](https://chatbase.com/documentation/events) allows handling of `Event` and `Events` types.
