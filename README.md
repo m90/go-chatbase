@@ -79,7 +79,7 @@ if err != nil || !response.Status.OK() {
 
 ### Facebook Message API
 
-The [Facebook Message API](https://chatbase.com/documentation/facebook) allows handling of `FacebookMessage` and `FacebookMessages` types.
+The [Facebook Message API](https://chatbase.com/documentation/facebook) allows handling of `FacebookMessage`, `FacebookMessages`, `FacebookRequestResponse` and `FacebookRequestResponses` types.
 
 #### `FacebookMessage`
 
@@ -102,6 +102,32 @@ for _, msg := range listOfFacebookMessages {
 }
 
 response, err := messages.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
+#### `FacebookRequestResponse`
+
+```go
+pair := client.FacebookRequestResponse(incomingMessage, respondingMessage)
+pair.SetIntent("test-messenger")
+response, err := pair.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
+#### `FacebookRequestResponses`
+
+```go
+pairs := chatbase.FacebookRequestResponses{}
+for _, msg := range listOfFacebookMessages {
+	pair := client.FacebookRequestResponse(msg.request, msg.response).SetVersion("0.0.1-beta")
+	pairs.Append(pair)
+}
+
+response, err := pairs.Submit()
 if err != nil || !response.Status.OK() {
 	// handle error
 }

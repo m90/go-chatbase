@@ -105,3 +105,18 @@ func TestFacebookMessage_Client(t *testing.T) {
 		}
 	})
 }
+
+func TestFacebookRequestResponse_Client(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		c := NewClient("foo-bar-baz")
+		expected := &FacebookRequestResponse{
+			APIKey:   "foo-bar-baz",
+			Request:  "hello",
+			Response: "goodbye",
+		}
+		f := c.FacebookRequestResponse("hello", "goodbye")
+		if !reflect.DeepEqual(expected, f) {
+			t.Errorf("Expected %#v, got %#v", expected, f)
+		}
+	})
+}

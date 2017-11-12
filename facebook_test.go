@@ -33,6 +33,28 @@ func TestFacebookMessage_Setters(t *testing.T) {
 		}
 	})
 }
+func TestFacebookRequestResponse_Setters(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := FacebookRequestResponse{
+			Request:  "hello",
+			Response: "goodbye",
+		}
+		expected := FacebookRequestResponse{
+			Request:  "hello",
+			Response: "goodbye",
+			Fields: &FacebookFields{
+				Intent:     "test-things",
+				NotHandled: true,
+				Feedback:   true,
+				Version:    "1.3.1",
+			},
+		}
+		m.SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.3.1")
+		if !reflect.DeepEqual(expected, m) {
+			t.Errorf("Expected %#v, got %#v", expected, m)
+		}
+	})
+}
 
 func TestFacebookMessage_MarshalJSON(t *testing.T) {
 	tests := []struct {

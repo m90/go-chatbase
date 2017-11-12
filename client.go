@@ -60,3 +60,12 @@ func (c *Client) FacebookMessage(payload interface{}) *FacebookMessage {
 		APIKey:  c.String(),
 	}
 }
+
+// FacebookRequestResponse creates a new wrapper around a request and response
+func (c *Client) FacebookRequestResponse(request, response interface{}) *FacebookRequestResponse {
+	return &FacebookRequestResponse{
+		APIKey:   c.String(),
+		Request:  request,
+		Response: response,
+	}
+}

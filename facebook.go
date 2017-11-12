@@ -84,16 +84,7 @@ func (f *FacebookMessage) SetVersion(v string) *FacebookMessage {
 
 // Submit tries to deliver a single Facebook message to chatbase
 func (f *FacebookMessage) Submit() (*MessageResponse, error) {
-	body, err := postFacebook(facebookMessageEndpoint, f.APIKey, f)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessageResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return postSingleFacebookItem(f, f.APIKey)
 }
 
 // FacebookMessages is a collection of Facecbook Message
@@ -111,16 +102,7 @@ func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 		return nil, errors.New("cannot submit empty collection")
 	}
 	apiKey := (*f)[0].APIKey
-	body, err := postFacebook(facebookMessagesEndpoint, apiKey, f)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessagesResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return postMultipleFacebookItems(f, apiKey)
 }
 
 func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
@@ -138,4 +120,106 @@ func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error)
 		return nil, err
 	}
 	return res.Body, nil
+}
+
+func postSingleFacebookItem(v interface{}, apiKey string) (*MessageResponse, error) {
+	body, err := postFacebook(facebookMessageEndpoint, apiKey, v)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessageResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+func postMultipleFacebookItems(v interface{}, apiKey string) (*MessagesResponse, error) {
+	body, err := postFacebook(facebookMessagesEndpoint, apiKey, v)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessagesResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+// FacebookRequestResponse is a payload that contains both request and response
+type FacebookRequestResponse struct {
+	APIKey   string          `json:"-"`
+	Request  interface{}     `json:"request_body"`
+	Response interface{}     `json:"response_body"`
+	Fields   *FacebookFields `json:"chatbase_fields"`
+}
+
+// SetIntent adds an optional intent value to the message
+func (f *FacebookRequestResponse) SetIntent(i string) *FacebookRequestResponse {
+	if f.Fields == nil {
+		f.Fields = &FacebookFields{}
+	}
+	f.Fields.Intent = i
+	return f
+}
+
+// SetNotHandled adds an optional not handled value to the message
+func (f *FacebookRequestResponse) SetNotHandled(n bool) *FacebookRequestResponse {
+	if f.Fields == nil {
+		f.Fields = &FacebookFields{}
+	}
+	f.Fields.NotHandled = n
+	return f
+}
+
+// SetFeedback adds an optional feedback value to the message
+func (f *FacebookRequestResponse) SetFeedback(n bool) *FacebookRequestResponse {
+	if f.Fields == nil {
+		f.Fields = &FacebookFields{}
+	}
+	f.Fields.Feedback = n
+	return f
+}
+
+// SetVersion adds an optional version value to the message
+func (f *FacebookRequestResponse) SetVersion(v string) *FacebookRequestResponse {
+	if f.Fields == nil {
+		f.Fields = &FacebookFields{}
+	}
+	f.Fields.Version = v
+	return f
+}
+
+// Submit tries to send the request/response pair to Chatbase
+func (f *FacebookRequestResponse) Submit() (*MessageResponse, error) {
+	body, err := postFacebook(facebookMessageEndpoint, f.APIKey, f)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessageResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+// FacebookRequestResponses is a collection of FacebookRequestResponse
+type FacebookRequestResponses []FacebookRequestResponse
+
+// Submit tries to send the collection of request/response pairs to Chatbase
+func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
+	if len(*f) == 0 {
+		return nil, errors.New("cannot submit empty collection")
+	}
+	apiKey := (*f)[0].APIKey
+	return postMultipleFacebookItems(f, apiKey)
+}
+
+// Append adds the additional message to the collection
+func (f *FacebookRequestResponses) Append(addition *FacebookRequestResponse) *FacebookRequestResponses {
+	*f = append(*f, *addition)
+	return f
 }
