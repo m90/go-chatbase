@@ -162,5 +162,16 @@ if err := events.Submit(); err != nil {
 }
 ```
 
+### Link tracking API
+
+The [link tracking](https://chatbase.com/documentation/taps) allows handling of `Link` types.
+
+#### `Link`
+
+```go
+link := client.Link("https://golang.org/", "telegram")
+trackableHREF := link.String()
+```
+
 ### License
 MIT © [Frederik Ring](http://www.frederikring.com)

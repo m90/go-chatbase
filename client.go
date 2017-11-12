@@ -69,3 +69,12 @@ func (c *Client) FacebookRequestResponse(request, response interface{}) *Faceboo
 		Response: response,
 	}
 }
+
+// Link returns a trackable link to the given URL
+func (c *Client) Link(url, platform string) *Link {
+	return &Link{
+		APIKey:   c.String(),
+		URL:      url,
+		Platform: platform,
+	}
+}
