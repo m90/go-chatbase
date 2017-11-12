@@ -77,6 +77,21 @@ if err != nil || !response.Status.OK() {
 }
 ```
 
+### Facebook Message API
+
+The [Facebook Message API](https://chatbase.com/documentation/facebook) allows handling of `FacebookMessage` and `FacebookMessages` types.
+
+#### `FacebookMessage`
+
+```go
+message := client.FacebookMessage(facebookPayload)
+message.SetIntent("test-messenger")
+response, err := message.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
 ### Events API
 
 The [Events API](https://chatbase.com/documentation/events) allows handling of `Event` and `Events` types.
