@@ -43,8 +43,8 @@ func (e *Event) SetVersion(v string) *Event {
 
 // AddProperty adds a new property to the event using the given name and value.
 // The passed value needs to be one of `int`, `string`, `bool` or `float64`
-func (e *Event) AddProperty(name string, value interface{}) error {
-	prop, err := NewEventProperty(name, value)
+func (e *Event) AddProperty(name string, v interface{}) error {
+	prop, err := NewEventProperty(name, v)
 	if err != nil {
 		return err
 	}

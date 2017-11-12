@@ -16,7 +16,7 @@ func (c *Client) String() string {
 
 // Message returns a new Message using the client's key and
 // the current time as a timestamp
-func (c *Client) Message(typ, userID, platform string) *Message {
+func (c *Client) Message(typ MessageType, userID, platform string) *Message {
 	return &Message{
 		APIKey:    c.String(),
 		Type:      typ,
@@ -28,12 +28,12 @@ func (c *Client) Message(typ, userID, platform string) *Message {
 
 // UserMessage is a convenience method for creating a user created message
 func (c *Client) UserMessage(userID, platform string) *Message {
-	return c.Message(MessageTypeUser, userID, platform)
+	return c.Message(UserType, userID, platform)
 }
 
 // AgentMessage is a convenience method for creating an agent created message
 func (c *Client) AgentMessage(userID, platform string) *Message {
-	return c.Message(MessageTypeAgent, userID, platform)
+	return c.Message(AgentType, userID, platform)
 }
 
 // Event creates a new Event using the client's API Key

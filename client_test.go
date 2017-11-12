@@ -28,7 +28,7 @@ func TestMessage_Client(t *testing.T) {
 			TimeStamp: 998877,
 			Platform:  "fantasy-chat",
 		}
-		m := c.Message(MessageTypeAgent, "abc123", "fantasy-chat")
+		m := c.Message(AgentType, "abc123", "fantasy-chat")
 		if !reflect.DeepEqual(expected, m) {
 			t.Errorf("Expected %v, got %v", expected, m)
 		}

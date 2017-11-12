@@ -12,14 +12,14 @@ func TestMessage_Setters(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		m := Message{
 			APIKey:    "secret",
-			Type:      MessageTypeAgent,
+			Type:      AgentType,
 			UserID:    "abc-123",
 			TimeStamp: 998877,
 			Platform:  "test",
 		}
 		expected := Message{
 			APIKey:     "secret",
-			Type:       MessageTypeAgent,
+			Type:       AgentType,
 			UserID:     "abc-123",
 			TimeStamp:  111444,
 			Platform:   "test",

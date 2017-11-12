@@ -8,11 +8,14 @@ import (
 	"net/http"
 )
 
+// MessageType describes the source of a message
+type MessageType string
+
 // types of messages used to identify the origin of
 // a message in Chatbase
 const (
-	MessageTypeUser  = "user"
-	MessageTypeAgent = "agent"
+	UserType  MessageType = "user"
+	AgentType MessageType = "agent"
 )
 
 var (
@@ -21,16 +24,16 @@ var (
 
 // Message contains info about a generic chat message
 type Message struct {
-	APIKey     string `json:"api_key"`
-	Type       string `json:"type"`
-	UserID     string `json:"user_id"`
-	TimeStamp  int    `json:"time_stamp"`
-	Platform   string `json:"platform"`
-	Message    string `json:"message,omitempty"`
-	Intent     string `json:"intent,omitempty"`
-	NotHandled bool   `json:"not_handled,omitempty"`
-	Feedback   bool   `json:"feedback,omitempty"`
-	Version    string `json:"version,omitempty"`
+	APIKey     string      `json:"api_key"`
+	Type       MessageType `json:"type"`
+	UserID     string      `json:"user_id"`
+	TimeStamp  int         `json:"time_stamp"`
+	Platform   string      `json:"platform"`
+	Message    string      `json:"message,omitempty"`
+	Intent     string      `json:"intent,omitempty"`
+	NotHandled bool        `json:"not_handled,omitempty"`
+	Feedback   bool        `json:"feedback,omitempty"`
+	Version    string      `json:"version,omitempty"`
 }
 
 // SetMessage adds an optional message value

@@ -43,7 +43,7 @@ The [generic message API](https://chatbase.com/documentation/generic) allows han
 #### `Message`
 
 ```go
-message := client.UserMessage("USER-ID", "messenger")
+message := client.Message(chatbase.UserType, "USER-ID", "messenger")
 message.SetMessage("How are you today?")
 response, err := message.Submit()
 if err != nil || !response.Status.OK() {
@@ -56,7 +56,7 @@ if err != nil || !response.Status.OK() {
 ```go
 messages := chatbase.Messages{}
 for i := 1; i < 4; i++ {
-	message := client.UserMessage("USER-ID", "messenger")
+	message := client.AgentMessage("USER-ID", "messenger")
 	message.SetMessage(fmt.Sprintf("Counting: %d", i))
 	messages.Append(message)
 }
