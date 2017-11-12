@@ -10,4 +10,4 @@ matrix:
   allow_failures:
     - go: master
 
-script: go test ./... --bench=./...
+script: make

@@ -20,6 +20,7 @@ const (
 
 var (
 	messagesEndpoint = "https://chatbase.com/api/messages"
+	messageEndpoint  = "https://chatbase.com/api/message"
 )
 
 // Message contains info about a generic chat message
@@ -72,12 +73,12 @@ func (m *Message) SetTimeStamp(t int) *Message {
 	return m
 }
 
-func postMessage(v interface{}) (io.ReadCloser, error) {
+func postMessage(endpoint string, v interface{}) (io.ReadCloser, error) {
 	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
 		return nil, payloadErr
 	}
-	res, err := http.Post(messagesEndpoint, "application/json", bytes.NewBuffer(payload))
+	res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +90,7 @@ func postMessage(v interface{}) (io.ReadCloser, error) {
 
 // Submit tries to deliver the message to Chatbase
 func (m *Message) Submit() (*MessageResponse, error) {
-	body, err := postMessage(m)
+	body, err := postMessage(messageEndpoint, m)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +114,10 @@ type Messages []Message
 
 // Submit tries to deliver the set of messages to Chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
-	body, err := postMessage(m)
+	body, err := postMessage(
+		messagesEndpoint,
+		map[string]interface{}{"messages": m},
+	)
 	if err != nil {
 		return nil, err
 	}

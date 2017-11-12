@@ -91,11 +91,11 @@ func TestSubmit_Message(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			oldMessagesEndpoint := messagesEndpoint
-			defer func() { messagesEndpoint = oldMessagesEndpoint }()
+			oldMessageEndpoint := messageEndpoint
+			defer func() { messageEndpoint = oldMessageEndpoint }()
 
 			ts := httptest.NewServer(test.handler)
-			messagesEndpoint = ts.URL
+			messageEndpoint = ts.URL
 
 			result, err := test.message.Submit()
 			if test.expectError != (err != nil) {
