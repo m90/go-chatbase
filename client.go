@@ -52,3 +52,20 @@ func (c *Client) Update(messageID string) *Update {
 		MessageID: messageID,
 	}
 }
+
+// FacebookMessage creates a new native Facebook message
+func (c *Client) FacebookMessage(payload interface{}) *FacebookMessage {
+	return &FacebookMessage{
+		Payload: payload,
+		APIKey:  c.String(),
+	}
+}
+
+// FacebookRequestResponse creates a new wrapper around a request and response
+func (c *Client) FacebookRequestResponse(request, response interface{}) *FacebookRequestResponse {
+	return &FacebookRequestResponse{
+		APIKey:   c.String(),
+		Request:  request,
+		Response: response,
+	}
+}

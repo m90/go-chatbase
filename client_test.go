@@ -76,7 +76,7 @@ func TestEvent_Client(t *testing.T) {
 	})
 }
 
-func TestEvent_Update(t *testing.T) {
+func TestUpdate_Client(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		c := NewClient("foo-bar-baz")
 		expected := &Update{
@@ -86,6 +86,37 @@ func TestEvent_Update(t *testing.T) {
 		u := c.Update("abc123")
 		if !reflect.DeepEqual(expected, u) {
 			t.Errorf("Expected %v, got %v", expected, u)
+		}
+	})
+}
+
+func TestFacebookMessage_Client(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		c := NewClient("foo-bar-baz")
+		expected := &FacebookMessage{
+			APIKey: "foo-bar-baz",
+			Payload: map[string]string{
+				"hello": "world",
+			},
+		}
+		f := c.FacebookMessage(map[string]string{"hello": "world"})
+		if !reflect.DeepEqual(expected, f) {
+			t.Errorf("Expected %#v, got %#v", expected, f)
+		}
+	})
+}
+
+func TestFacebookRequestResponse_Client(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		c := NewClient("foo-bar-baz")
+		expected := &FacebookRequestResponse{
+			APIKey:   "foo-bar-baz",
+			Request:  "hello",
+			Response: "goodbye",
+		}
+		f := c.FacebookRequestResponse("hello", "goodbye")
+		if !reflect.DeepEqual(expected, f) {
+			t.Errorf("Expected %#v, got %#v", expected, f)
 		}
 	})
 }

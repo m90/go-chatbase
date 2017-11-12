@@ -77,6 +77,62 @@ if err != nil || !response.Status.OK() {
 }
 ```
 
+### Facebook Message API
+
+The [Facebook Message API](https://chatbase.com/documentation/facebook) allows handling of `FacebookMessage`, `FacebookMessages`, `FacebookRequestResponse` and `FacebookRequestResponses` types.
+
+#### `FacebookMessage`
+
+```go
+message := client.FacebookMessage(facebookPayload)
+message.SetIntent("test-messenger")
+response, err := message.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
+#### `FacebookMessages`
+
+```go
+messages := chatbase.FacebookMessages{}
+for _, msg := range listOfFacebookMessages {
+	message := client.FacebookMessage(msg).SetVersion("0.0.1-beta")
+	messages.Append(message)
+}
+
+response, err := messages.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
+#### `FacebookRequestResponse`
+
+```go
+pair := client.FacebookRequestResponse(incomingMessage, respondingMessage)
+pair.SetIntent("test-messenger")
+response, err := pair.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
+#### `FacebookRequestResponses`
+
+```go
+pairs := chatbase.FacebookRequestResponses{}
+for _, msg := range listOfFacebookMessages {
+	pair := client.FacebookRequestResponse(msg.request, msg.response).SetVersion("0.0.1-beta")
+	pairs.Append(pair)
+}
+
+response, err := pairs.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
+```
+
 ### Events API
 
 The [Events API](https://chatbase.com/documentation/events) allows handling of `Event` and `Events` types.
