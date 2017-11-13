@@ -77,14 +77,29 @@ func (e *Event) Submit() error {
 // Events is a collection of Event
 type Events []Event
 
+// MarshalJSON ensure the collection is correctly wrapped
+// into an object
+func (e Events) MarshalJSON() ([]byte, error) {
+	var apiKey string
+	if len(e) > 0 {
+		apiKey = e[0].APIKey
+	}
+	return json.Marshal(map[string]interface{}{
+		"api_key": apiKey,
+		"events":  []Event(e),
+	})
+}
+
 // Submit tries to deliver the set of events to Chatbase
 func (e *Events) Submit() error {
 	return postEvent(eventsEndpoint, e)
 }
 
-// Append adds an event to the the collection
-func (e *Events) Append(addition *Event) *Events {
-	*e = append(*e, *addition)
+// Append adds a events to the the collection
+func (e *Events) Append(addition ...*Event) *Events {
+	for _, a := range addition {
+		*e = append(*e, *a)
+	}
 	return e
 }
 

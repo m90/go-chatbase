@@ -3,7 +3,6 @@
 package chatbase_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -51,8 +50,6 @@ func TestMessages(t *testing.T) {
 		messages := chatbase.Messages{}
 		messages.Append(
 			client.UserMessage(userID, platform).SetMessage("Hello Bot!"),
-		)
-		messages.Append(
 			client.AgentMessage(userID, platform).SetMessage("Hello User!"),
 		)
 		msgRes, msgErr := messages.Submit()
@@ -62,7 +59,6 @@ func TestMessages(t *testing.T) {
 		if !msgRes.Status.OK() {
 			t.Errorf("Unexpected status %v", msgRes.Status)
 		}
-		fmt.Printf("%#v\n", msgRes)
 		update := client.Update(msgRes.Responses[0].MessageID.String())
 		update.SetIntent("slightly-too-late")
 		updateRes, updateErr := update.Submit()
@@ -71,6 +67,31 @@ func TestMessages(t *testing.T) {
 		}
 		if !updateRes.Status.OK() {
 			t.Errorf("Unexpected status %v", updateRes)
+		}
+	})
+}
+
+func TestEvents(t *testing.T) {
+	t.Run("single", func(t *testing.T) {
+		client := chatbase.NewClient(apiKey)
+		ev := client.Event(userID, "send-an-event")
+		ev.SetPlatform(platform).AddProperty("is-this-a-test", true)
+		if err := ev.Submit(); err != nil {
+			t.Errorf("Unexpected error %v", err)
+		}
+	})
+	t.Run("multiple", func(t *testing.T) {
+		client := chatbase.NewClient(apiKey)
+		events := chatbase.Events{}
+		ev1 := client.Event(userID, "send-multiple-events")
+		ev1.AddProperty("number", 1)
+		ev2 := client.Event(userID, "send-multiple-events")
+		ev2.AddProperty("number", 2)
+		ev3 := client.Event(userID, "send-multiple-events")
+		ev3.AddProperty("number", 3)
+		events.Append(ev1, ev2, ev3)
+		if err := events.Submit(); err != nil {
+			t.Errorf("Unexpected error %v", err)
 		}
 	})
 }

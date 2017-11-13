@@ -112,12 +112,15 @@ type MessageResponse struct {
 // Messages is a collection of Message
 type Messages []Message
 
+// MarshalJSON ensures the messages are wrapped in a top-level object before
+// being serialized into JSON
+func (m Messages) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{"messages": []Message(m)})
+}
+
 // Submit tries to deliver the set of messages to Chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
-	body, err := postMessage(
-		messagesEndpoint,
-		map[string]interface{}{"messages": m},
-	)
+	body, err := postMessage(messagesEndpoint, m)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +133,10 @@ func (m *Messages) Submit() (*MessagesResponse, error) {
 }
 
 // Append adds a message to the the collection
-func (m *Messages) Append(addition *Message) *Messages {
-	*m = append(*m, *addition)
+func (m *Messages) Append(addition ...*Message) *Messages {
+	for _, a := range addition {
+		*m = append(*m, *a)
+	}
 	return m
 }
 

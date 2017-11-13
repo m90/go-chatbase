@@ -6,7 +6,7 @@ var (
 	redirectURL = "https://chatbase.com/r"
 )
 
-// Link describes an outgoing link that should be tracked using Chatbase
+// Link describes a hyperlink that should be tracked using Chatbase
 type Link struct {
 	APIKey   string
 	URL      string
