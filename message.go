@@ -107,6 +107,7 @@ func (m *Message) Submit() (*MessageResponse, error) {
 type MessageResponse struct {
 	MessageID MessageID `json:"message_id"`
 	Status    Status    `json:"status"`
+	Reason    string    `json:"reason,omitempty"`
 }
 
 // Messages is a collection of Message
@@ -145,4 +146,5 @@ type MessagesResponse struct {
 	AllSucceded bool              `json:"all_succeeded"`
 	Status      Status            `json:"status"`
 	Responses   []MessageResponse `json:"responses"`
+	Reason      string            `json:"reason,omitempty"`
 }

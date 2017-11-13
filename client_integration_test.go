@@ -26,23 +26,25 @@ func TestMain(m *testing.M) {
 func TestMessages(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
 		client := chatbase.New(apiKey)
-		message := client.AgentMessage(userID, platform)
+		message := client.UserMessage(userID, platform)
+		message.SetFeedback(true)
 		message.SetIntent("always-on-time")
 		msgRes, msgErr := message.Submit()
 		if msgErr != nil {
-			t.Errorf("Unexpected error %v", msgErr)
+			t.Fatalf("Unexpected error %v", msgErr)
 		}
 		if !msgRes.Status.OK() {
-			t.Errorf("Unexpected status %v", msgRes.Status)
+			t.Fatalf("Unexpected status %v with reason %v", msgRes.Status, msgRes.Reason)
 		}
 		update := client.Update(msgRes.MessageID.String())
 		update.SetVersion("1.2.3")
+		update.SetNotHandled("true")
 		updateRes, updateErr := update.Submit()
 		if updateErr != nil {
-			t.Errorf("Unexpected error %v", updateErr)
+			t.Fatalf("Unexpected error %v", updateErr)
 		}
 		if !updateRes.Status.OK() {
-			t.Errorf("Unexpected status %v", updateRes.Status)
+			t.Fatalf("Unexpected status %v", updateRes.Status)
 		}
 	})
 	t.Run("multiple", func(t *testing.T) {
@@ -54,19 +56,19 @@ func TestMessages(t *testing.T) {
 		)
 		msgRes, msgErr := messages.Submit()
 		if msgErr != nil {
-			t.Errorf("Unexpected error %v", msgErr)
+			t.Fatalf("Unexpected error %v", msgErr)
 		}
 		if !msgRes.Status.OK() {
-			t.Errorf("Unexpected status %v", msgRes.Status)
+			t.Fatalf("Unexpected status %v", msgRes.Status)
 		}
 		update := client.Update(msgRes.Responses[0].MessageID.String())
 		update.SetIntent("slightly-too-late")
 		updateRes, updateErr := update.Submit()
 		if updateErr != nil {
-			t.Errorf("Unexpected error %v", updateErr)
+			t.Fatalf("Unexpected error %v", updateErr)
 		}
 		if !updateRes.Status.OK() {
-			t.Errorf("Unexpected status %v", updateRes)
+			t.Fatalf("Unexpected status %v", updateRes)
 		}
 	})
 }
@@ -77,7 +79,7 @@ func TestEvents(t *testing.T) {
 		ev := client.Event(userID, "send-an-event")
 		ev.SetPlatform(platform).AddProperty("is-this-a-test", true)
 		if err := ev.Submit(); err != nil {
-			t.Errorf("Unexpected error %v", err)
+			t.Fatalf("Unexpected error %v", err)
 		}
 	})
 	t.Run("multiple", func(t *testing.T) {
@@ -86,12 +88,12 @@ func TestEvents(t *testing.T) {
 		for i := 1; i < 4; i++ {
 			ev := client.Event(userID, "send-multiple-events")
 			if err := ev.AddProperty("number", i); err != nil {
-				t.Errorf("Unexpected error %v", err)
+				t.Fatalf("Unexpected error %v", err)
 			}
 			events.Append(ev)
 		}
 		if err := events.Submit(); err != nil {
-			t.Errorf("Unexpected error %v", err)
+			t.Fatalf("Unexpected error %v", err)
 		}
 	})
 }
