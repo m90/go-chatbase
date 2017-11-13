@@ -83,13 +83,13 @@ func TestEvents(t *testing.T) {
 	t.Run("multiple", func(t *testing.T) {
 		client := chatbase.New(apiKey)
 		events := chatbase.Events{}
-		ev1 := client.Event(userID, "send-multiple-events")
-		ev1.AddProperty("number", 1)
-		ev2 := client.Event(userID, "send-multiple-events")
-		ev2.AddProperty("number", 2)
-		ev3 := client.Event(userID, "send-multiple-events")
-		ev3.AddProperty("number", 3)
-		events.Append(ev1, ev2, ev3)
+		for i := 1; i < 4; i++ {
+			ev := client.Event(userID, "send-multiple-events")
+			if err := ev.AddProperty("number", i); err != nil {
+				t.Errorf("Unexpected error %v", err)
+			}
+			events.Append(ev)
+		}
 		if err := events.Submit(); err != nil {
 			t.Errorf("Unexpected error %v", err)
 		}
