@@ -7,7 +7,7 @@ import (
 
 func TestNewClient(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		c := NewClient("foo-bar-baz")
+		c := New("foo-bar-baz")
 		if c.String() != "foo-bar-baz" {
 			t.Errorf("Expected foo-bar-baz, got %v", c.String())
 		}
@@ -18,7 +18,7 @@ func TestMessage_Client(t *testing.T) {
 	oldTimeStamp := TimeStamp
 	defer func() { TimeStamp = oldTimeStamp }()
 	TimeStamp = func() int { return 998877 }
-	c := NewClient("foo-bar-baz")
+	c := New("foo-bar-baz")
 
 	t.Run("default", func(t *testing.T) {
 		expected := &Message{
@@ -63,7 +63,7 @@ func TestMessage_Client(t *testing.T) {
 
 func TestEvent_Client(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		c := NewClient("foo-bar-baz")
+		c := New("foo-bar-baz")
 		expected := &Event{
 			APIKey: "foo-bar-baz",
 			UserID: "abc-123",
@@ -78,7 +78,7 @@ func TestEvent_Client(t *testing.T) {
 
 func TestUpdate_Client(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		c := NewClient("foo-bar-baz")
+		c := New("foo-bar-baz")
 		expected := &Update{
 			APIKey:    "foo-bar-baz",
 			MessageID: "abc123",
@@ -92,7 +92,7 @@ func TestUpdate_Client(t *testing.T) {
 
 func TestFacebookMessage_Client(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		c := NewClient("foo-bar-baz")
+		c := New("foo-bar-baz")
 		expected := &FacebookMessage{
 			APIKey: "foo-bar-baz",
 			Payload: map[string]string{
@@ -108,7 +108,7 @@ func TestFacebookMessage_Client(t *testing.T) {
 
 func TestFacebookRequestResponse_Client(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		c := NewClient("foo-bar-baz")
+		c := New("foo-bar-baz")
 		expected := &FacebookRequestResponse{
 			APIKey:   "foo-bar-baz",
 			Request:  "hello",

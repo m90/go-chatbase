@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 
 func TestMessages(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
-		client := chatbase.NewClient(apiKey)
+		client := chatbase.New(apiKey)
 		message := client.AgentMessage(userID, platform)
 		message.SetIntent("always-on-time")
 		msgRes, msgErr := message.Submit()
@@ -46,7 +46,7 @@ func TestMessages(t *testing.T) {
 		}
 	})
 	t.Run("multiple", func(t *testing.T) {
-		client := chatbase.NewClient(apiKey)
+		client := chatbase.New(apiKey)
 		messages := chatbase.Messages{}
 		messages.Append(
 			client.UserMessage(userID, platform).SetMessage("Hello Bot!"),
@@ -73,7 +73,7 @@ func TestMessages(t *testing.T) {
 
 func TestEvents(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
-		client := chatbase.NewClient(apiKey)
+		client := chatbase.New(apiKey)
 		ev := client.Event(userID, "send-an-event")
 		ev.SetPlatform(platform).AddProperty("is-this-a-test", true)
 		if err := ev.Submit(); err != nil {
@@ -81,7 +81,7 @@ func TestEvents(t *testing.T) {
 		}
 	})
 	t.Run("multiple", func(t *testing.T) {
-		client := chatbase.NewClient(apiKey)
+		client := chatbase.New(apiKey)
 		events := chatbase.Events{}
 		ev1 := client.Event(userID, "send-multiple-events")
 		ev1.AddProperty("number", 1)

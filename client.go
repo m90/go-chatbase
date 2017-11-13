@@ -4,8 +4,8 @@ package chatbase
 // collect and submit messages and events
 type Client string
 
-// NewClient returns a new Client using the given Chatbase API Key
-func NewClient(apiKey string) *Client {
+// New returns a new Client using the given Chatbase API Key
+func New(apiKey string) *Client {
 	c := Client(apiKey)
 	return &c
 }
