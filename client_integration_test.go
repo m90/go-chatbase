@@ -46,7 +46,7 @@ func TestMessages(t *testing.T) {
 			t.Fatalf("Unexpected error %v", updateErr)
 		}
 		if !updateRes.Status.OK() {
-			t.Fatalf("Unexpected status %v", updateRes.Status)
+			t.Fatalf("Unexpected status %v with reason %v", updateRes.Status, updateRes.Reason)
 		}
 	})
 	t.Run("multiple", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestMessages(t *testing.T) {
 			t.Fatalf("Unexpected error %v", msgErr)
 		}
 		if !msgRes.Status.OK() {
-			t.Fatalf("Unexpected status %v", msgRes.Status)
+			t.Fatalf("Unexpected status %v with reason %v", msgRes.Status, msgRes.Reason)
 		}
 		update := client.Update(msgRes.Responses[0].MessageID.String())
 		update.SetIntent("slightly-too-late")
@@ -70,7 +70,7 @@ func TestMessages(t *testing.T) {
 			t.Fatalf("Unexpected error %v", updateErr)
 		}
 		if !updateRes.Status.OK() {
-			t.Fatalf("Unexpected status %v", updateRes)
+			t.Fatalf("Unexpected status %v with reason %v", updateRes, updateRes.Reason)
 		}
 	})
 }
@@ -118,7 +118,7 @@ func TestFacebookMessages(t *testing.T) {
 			t.Fatalf("Unexpected error %v", responseErr)
 		}
 		if !response.Status.OK() {
-			t.Fatalf("Unexpected status %v of %v", response.Status, response)
+			t.Fatalf("Unexpected status %v with reason %v", response.Status, response.Reason)
 		}
 		update := client.Update(response.MessageID.String())
 		update.SetVersion("1.2.4")
@@ -127,7 +127,7 @@ func TestFacebookMessages(t *testing.T) {
 			t.Fatalf("Unexpected error %v", updateErr)
 		}
 		if !updateRes.Status.OK() {
-			t.Fatalf("Unexpected status %v of %v", updateRes.Status, updateRes)
+			t.Fatalf("Unexpected status %v with reason %v", updateRes.Status, updateRes.Reason)
 		}
 	})
 }

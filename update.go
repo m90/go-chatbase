@@ -93,4 +93,5 @@ type UpdateResponse struct {
 	Error   []string `json:"error"`
 	Updated []string `json:"updated"`
 	Status  Status   `json:"status"`
+	Reason  string   `json:"string"`
 }
