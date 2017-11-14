@@ -3,6 +3,8 @@
 package chatbase_test
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -94,6 +96,38 @@ func TestEvents(t *testing.T) {
 		}
 		if err := events.Submit(); err != nil {
 			t.Fatalf("Unexpected error %v", err)
+		}
+	})
+}
+
+func TestFacebookMessages(t *testing.T) {
+	t.Run("single", func(t *testing.T) {
+		client := chatbase.New(apiKey)
+		b, err := ioutil.ReadFile("testdata/facebook_single_payload.json")
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		var payload map[string]interface{}
+		if err := json.Unmarshal(b, &payload); err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		fbMessage := client.FacebookMessage(payload)
+		fbMessage.SetIntent("test-facebook")
+		response, responseErr := fbMessage.Submit()
+		if responseErr != nil {
+			t.Fatalf("Unexpected error %v", responseErr)
+		}
+		if !response.Status.OK() {
+			t.Fatalf("Unexpected status %v of %v", response.Status, response)
+		}
+		update := client.Update(response.MessageID.String())
+		update.SetVersion("1.2.4")
+		updateRes, updateErr := update.Submit()
+		if updateErr != nil {
+			t.Fatalf("Unexpected error %v", updateErr)
+		}
+		if !updateRes.Status.OK() {
+			t.Fatalf("Unexpected status %v of %v", updateRes.Status, updateRes)
 		}
 	})
 }
