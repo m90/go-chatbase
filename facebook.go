@@ -90,6 +90,14 @@ func (f *FacebookMessage) Submit() (*MessageResponse, error) {
 // FacebookMessages is a collection of Facecbook Message
 type FacebookMessages []FacebookMessage
 
+// MarshalJSON ensures the messages are wrapped in a top-level object before
+// being serialized into the payload
+func (f FacebookMessages) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"messages": []FacebookMessage(f),
+	})
+}
+
 // Append adds the additional message to the collection
 func (f *FacebookMessages) Append(addition *FacebookMessage) *FacebookMessages {
 	*f = append(*f, *addition)

@@ -116,7 +116,9 @@ type Messages []Message
 // MarshalJSON ensures the messages are wrapped in a top-level object before
 // being serialized into JSON
 func (m Messages) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{"messages": []Message(m)})
+	return json.Marshal(map[string]interface{}{
+		"messages": []Message(m),
+	})
 }
 
 // Submit tries to deliver the set of messages to Chatbase
