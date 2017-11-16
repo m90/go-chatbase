@@ -1,11 +1,9 @@
 package chatbase
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
-	"net/http"
 	"net/url"
 )
 
@@ -29,8 +27,8 @@ type FacebookMessage struct {
 	APIKey  string
 }
 
-// MarshalJSON ensures the message is encoded in the way that
-// Chatbase expects
+// MarshalJSON ensures the message is merged with the metadata in the way that
+// Chatbase expects it to bbe
 func (f FacebookMessage) MarshalJSON() ([]byte, error) {
 	intermediate, intermediateErr := json.Marshal(f.Payload)
 	if intermediateErr != nil {
@@ -114,20 +112,17 @@ func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 }
 
 func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
-	payload, payloadErr := json.Marshal(v)
-	if payloadErr != nil {
-		return nil, payloadErr
-	}
 	u, uErr := url.Parse(endpoint)
 	if uErr != nil {
 		return nil, uErr
 	}
 	u.RawQuery = url.Values{"api_key": []string{apiKey}}.Encode()
-	res, err := http.Post(u.String(), "application/json", bytes.NewBuffer(payload))
+
+	body, err := apiPost(u.String(), v)
 	if err != nil {
 		return nil, err
 	}
-	return res.Body, nil
+	return body, nil
 }
 
 func postSingleFacebookItem(v interface{}, apiKey string) (*MessageResponse, error) {

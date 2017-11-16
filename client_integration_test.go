@@ -198,3 +198,18 @@ func TestFacebookMessages(t *testing.T) {
 		}
 	})
 }
+
+func TestLink(t *testing.T) {
+	t.Run("single", func(t *testing.T) {
+		client := chatbase.New(apiKey)
+		click := client.Link("https://www.chatbase.com", "integration-test")
+		click.SetVersion("9.8.7")
+		res, err := click.Submit()
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if !res.Status.OK() {
+			t.Errorf("Unexpected status %v with reason %v", res.Status, res.Reason)
+		}
+	})
+}

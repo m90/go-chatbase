@@ -1,11 +1,7 @@
 package chatbase
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
 )
 
 // MessageType describes the source of a message
@@ -73,24 +69,9 @@ func (m *Message) SetTimeStamp(t int) *Message {
 	return m
 }
 
-func postMessage(endpoint string, v interface{}) (io.ReadCloser, error) {
-	payload, payloadErr := json.Marshal(v)
-	if payloadErr != nil {
-		return nil, payloadErr
-	}
-	res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
-	if err != nil {
-		return nil, err
-	}
-	if res.StatusCode >= http.StatusInternalServerError {
-		return nil, fmt.Errorf("request failed with status %v", res.StatusCode)
-	}
-	return res.Body, nil
-}
-
 // Submit tries to deliver the message to Chatbase
 func (m *Message) Submit() (*MessageResponse, error) {
-	body, err := postMessage(messageEndpoint, m)
+	body, err := apiPost(messageEndpoint, m)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +104,7 @@ func (m Messages) MarshalJSON() ([]byte, error) {
 
 // Submit tries to deliver the set of messages to Chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
-	body, err := postMessage(messagesEndpoint, m)
+	body, err := apiPost(messagesEndpoint, m)
 	if err != nil {
 		return nil, err
 	}

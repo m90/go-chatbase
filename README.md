@@ -171,6 +171,10 @@ The [link tracking](https://chatbase.com/documentation/taps) allows handling of 
 ```go
 link := client.Link("https://golang.org/", "telegram")
 trackableHREF := link.String()
+response, err := link.Submit()
+if err != nil || !response.Status.OK() {
+	// handle error
+}
 ```
 
 ### License

@@ -1,10 +1,8 @@
 package chatbase
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 )
 
@@ -48,11 +46,6 @@ func (u *Update) SetVersion(v string) *Update {
 
 // Submit tries to deliver the update to Chatbase
 func (u *Update) Submit() (*UpdateResponse, error) {
-	payload, payloadErr := json.Marshal(u)
-	if payloadErr != nil {
-		return nil, payloadErr
-	}
-
 	e, endpointErr := url.Parse(updateEndpoint)
 	if endpointErr != nil {
 		return nil, endpointErr
@@ -62,23 +55,14 @@ func (u *Update) Submit() (*UpdateResponse, error) {
 	q.Set("message_id", u.MessageID)
 	e.RawQuery = q.Encode()
 
-	req, reqErr := http.NewRequest(http.MethodPut, e.String(), bytes.NewBuffer(payload))
-	if reqErr != nil {
-		return nil, reqErr
+	body, bodyErr := apiPut(e.String(), u)
+	if bodyErr != nil {
+		return nil, bodyErr
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode >= http.StatusBadRequest {
-		return nil, fmt.Errorf("request failed with status code %v", res.StatusCode)
-	}
+	defer body.Close()
 
 	responseData := UpdateResponse{}
-	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
 		return nil, err
 	}
 

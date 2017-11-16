@@ -1,10 +1,8 @@
 package chatbase
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 var (
@@ -52,33 +50,17 @@ func (e *Event) AddProperty(name string, v interface{}) error {
 	return nil
 }
 
-func postEvent(endpoint string, v interface{}) error {
-	payload, payloadErr := json.Marshal(v)
-	if payloadErr != nil {
-		return payloadErr
-	}
-
-	res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	if res.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("request failed with status %v", res.StatusCode)
-	}
-	return nil
-}
-
 // Submit tries to deliver the set of events to Chatbase
 func (e *Event) Submit() error {
-	return postEvent(eventEndpoint, e)
+	_, err := apiPost(eventEndpoint, e)
+	return err
 }
 
 // Events is a collection of Event
 type Events []Event
 
 // MarshalJSON ensure the collection is correctly wrapped
-// into an object
+// into an object and added the api_key value
 func (e Events) MarshalJSON() ([]byte, error) {
 	var apiKey string
 	if len(e) > 0 {
@@ -92,7 +74,8 @@ func (e Events) MarshalJSON() ([]byte, error) {
 
 // Submit tries to deliver the set of events to Chatbase
 func (e *Events) Submit() error {
-	return postEvent(eventsEndpoint, e)
+	_, err := apiPost(eventsEndpoint, e)
+	return err
 }
 
 // Append adds a events to the the collection
