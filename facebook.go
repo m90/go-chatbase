@@ -202,20 +202,19 @@ func (f *FacebookRequestResponse) SetVersion(v string) *FacebookRequestResponse 
 
 // Submit tries to send the request/response pair to Chatbase
 func (f *FacebookRequestResponse) Submit() (*MessageResponse, error) {
-	body, err := postFacebook(facebookMessageEndpoint, f.APIKey, f)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessageResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return postSingleFacebookItem(f, f.APIKey)
 }
 
 // FacebookRequestResponses is a collection of FacebookRequestResponse
 type FacebookRequestResponses []FacebookRequestResponse
+
+// MarshalJSON ensures the messages are wrapped in a top-level object before
+// being serialized into the payload
+func (f FacebookRequestResponses) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"messages": []FacebookRequestResponse(f),
+	})
+}
 
 // Submit tries to send the collection of request/response pairs to Chatbase
 func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {

@@ -229,7 +229,7 @@ func TestFacebookMessages_Submit(t *testing.T) {
 			},
 			false,
 			&MessagesResponse{
-				AllSucceded: true,
+				AllSucceeded: true,
 				Responses: []MessageResponse{
 					{MessageID: "123456789", Status: true},
 					{MessageID: "987654321", Status: true},

@@ -19,6 +19,18 @@ const (
 	platform = "integration-test"
 )
 
+func readFixture(p string) (map[string]interface{}, error) {
+	b, err := ioutil.ReadFile(p)
+	if err != nil {
+		return nil, err
+	}
+	var payload map[string]interface{}
+	if err := json.Unmarshal(b, &payload); err != nil {
+		return nil, err
+	}
+	return payload, nil
+}
+
 func TestMain(m *testing.M) {
 	if apiKey = os.Getenv("CHATBASE_API_KEY"); apiKey == "" {
 		os.Exit(1)
@@ -104,12 +116,8 @@ func TestEvents(t *testing.T) {
 func TestFacebookMessages(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
 		client := chatbase.New(apiKey)
-		b, err := ioutil.ReadFile("testdata/facebook_single_payload.json")
+		payload, err := readFixture("testdata/facebook_single_payload.json")
 		if err != nil {
-			t.Fatalf("Unexpected error %v", err)
-		}
-		var payload map[string]interface{}
-		if err := json.Unmarshal(b, &payload); err != nil {
 			t.Fatalf("Unexpected error %v", err)
 		}
 		fbMessage := client.FacebookMessage(payload)
@@ -133,12 +141,8 @@ func TestFacebookMessages(t *testing.T) {
 	})
 	t.Run("multiple", func(t *testing.T) {
 		client := chatbase.New(apiKey)
-		b, err := ioutil.ReadFile("testdata/facebook_single_payload.json")
+		payload, err := readFixture("testdata/facebook_single_payload.json")
 		if err != nil {
-			t.Fatalf("Unexpected error %v", err)
-		}
-		var payload map[string]interface{}
-		if err := json.Unmarshal(b, &payload); err != nil {
 			t.Fatalf("Unexpected error %v", err)
 		}
 		fbMessages := chatbase.FacebookMessages{}
@@ -162,6 +166,35 @@ func TestFacebookMessages(t *testing.T) {
 		}
 		if !updateRes.Status.OK() {
 			t.Fatalf("Unexpected status %v with reason %v", updateRes.Status, updateRes.Reason)
+		}
+	})
+
+	t.Run("multiple request response objects", func(t *testing.T) {
+		t.SkipNow() // as of 2017-11-16 chatbase does return `all_succeeded: true` with reason: "All messages errored."
+
+		requestPayload, requestErr := readFixture("testdata/facebook_single_request.json")
+		if requestErr != nil {
+			t.Fatalf("Unexpected error %v", requestErr)
+		}
+		responsePayload, responseErr := readFixture("testdata/facebook_single_response.json")
+		if responseErr != nil {
+			t.Fatalf("Unexpected error %v", responseErr)
+		}
+
+		client := chatbase.New(apiKey)
+		fbMessages := chatbase.FacebookRequestResponses{}
+		for i := 0; i < 1; i++ {
+			fbMessage := client.FacebookRequestResponse(requestPayload, responsePayload)
+			fbMessage.SetIntent(fmt.Sprintf("number-%d", i))
+			fbMessages.Append(fbMessage)
+		}
+		response, responseErr := fbMessages.Submit()
+		if responseErr != nil {
+			t.Fatalf("Unexpected error %v", responseErr)
+		}
+		fmt.Printf("response %#v\n", response)
+		if !response.Status.OK() {
+			t.Fatalf("Unexpected status %v with reason %v", response.Status, response.Reason)
 		}
 	})
 }

@@ -124,8 +124,8 @@ func TestSubmit_Messages(t *testing.T) {
 			Messages{{}},
 			false,
 			&MessagesResponse{
-				AllSucceded: true,
-				Status:      true,
+				AllSucceeded: true,
+				Status:       true,
 				Responses: []MessageResponse{
 					{
 						MessageID: "123456789",
@@ -147,9 +147,9 @@ func TestSubmit_Messages(t *testing.T) {
 			Messages{{}},
 			false,
 			&MessagesResponse{
-				AllSucceded: false,
-				Status:      false,
-				Responses:   []MessageResponse{},
+				AllSucceeded: false,
+				Status:       false,
+				Responses:    []MessageResponse{},
 			},
 		},
 	}

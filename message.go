@@ -145,8 +145,8 @@ func (m *Messages) Append(addition ...*Message) *Messages {
 
 // MessagesResponse describes a Chatbase response to sending multiple messages at once
 type MessagesResponse struct {
-	AllSucceded bool              `json:"all_succeeded"`
-	Status      Status            `json:"status"`
-	Responses   []MessageResponse `json:"responses"`
-	Reason      string            `json:"reason,omitempty"`
+	AllSucceeded bool              `json:"all_succeeded"`
+	Status       Status            `json:"status"`
+	Responses    []MessageResponse `json:"responses"`
+	Reason       string            `json:"reason,omitempty"`
 }
