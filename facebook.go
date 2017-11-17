@@ -18,8 +18,8 @@ var (
 type FacebookFields struct {
 	Intent     string `json:"intent"`
 	NotHandled bool   `json:"not_handled"`
-	Feedback   bool   `json:"feedback"`
-	Version    string `json:"string"`
+	Feedback   bool   `json:"feedback,omitempty"`
+	Version    string `json:"version,omitempty"`
 }
 
 // FacebookMessage is a single native Facebook message
@@ -128,29 +128,15 @@ func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error)
 }
 
 func postSingleFacebookItem(v interface{}, apiKey, endpoint string) (*MessageResponse, error) {
-	body, err := postFacebook(endpoint, apiKey, v)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessageResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return newMessageResponse(func() (io.ReadCloser, error) {
+		return postFacebook(endpoint, apiKey, v)
+	})
 }
 
 func postMultipleFacebookItems(v interface{}, apiKey, endpoint string) (*MessagesResponse, error) {
-	body, err := postFacebook(endpoint, apiKey, v)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessagesResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return newMessagesResponse(func() (io.ReadCloser, error) {
+		return postFacebook(endpoint, apiKey, v)
+	})
 }
 
 // FacebookRequestResponse is a payload that contains both request and response

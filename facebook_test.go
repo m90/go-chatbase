@@ -80,7 +80,7 @@ func TestFacebookMessage_MarshalJSON(t *testing.T) {
 					Version:    "1.4.4",
 				},
 			},
-			`{"chatbase_fields":{"intent":"test-things","not_handled":true,"feedback":false,"string":"1.4.4"},"foo":"bar","hello":"world","nested":{"false":false,"true":true}}`,
+			`{"chatbase_fields":{"intent":"test-things","not_handled":true,"version":"1.4.4"},"foo":"bar","hello":"world","nested":{"false":false,"true":true}}`,
 			false,
 		},
 		{

@@ -2,6 +2,7 @@ package chatbase
 
 import (
 	"encoding/json"
+	"io"
 )
 
 // MessageType describes the source of a message
@@ -71,7 +72,21 @@ func (m *Message) SetTimeStamp(t int) *Message {
 
 // Submit tries to deliver the message to Chatbase
 func (m *Message) Submit() (*MessageResponse, error) {
-	body, err := apiPost(messageEndpoint, m)
+	return newMessageResponse(func() (io.ReadCloser, error) {
+		return apiPost(messageEndpoint, m)
+	})
+}
+
+// MessageResponse describes a Chatbase response to sending a single message
+// or is contained in a set of responses when performing batch operations
+type MessageResponse struct {
+	MessageID MessageID `json:"message_id"`
+	Status    Status    `json:"status"`
+	Reason    string    `json:"reason,omitempty"`
+}
+
+func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, error) {
+	body, err := thunk()
 	if err != nil {
 		return nil, err
 	}
@@ -81,14 +96,6 @@ func (m *Message) Submit() (*MessageResponse, error) {
 		return nil, err
 	}
 	return &responseData, nil
-}
-
-// MessageResponse describes a Chatbase response to sending a single message
-// or is contained in a set of responses when performing batch operations
-type MessageResponse struct {
-	MessageID MessageID `json:"message_id"`
-	Status    Status    `json:"status"`
-	Reason    string    `json:"reason,omitempty"`
 }
 
 // Messages is a collection of Message
@@ -104,16 +111,9 @@ func (m Messages) MarshalJSON() ([]byte, error) {
 
 // Submit tries to deliver the set of messages to Chatbase
 func (m *Messages) Submit() (*MessagesResponse, error) {
-	body, err := apiPost(messagesEndpoint, m)
-	if err != nil {
-		return nil, err
-	}
-	defer body.Close()
-	responseData := MessagesResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return newMessagesResponse(func() (io.ReadCloser, error) {
+		return apiPost(messagesEndpoint, m)
+	})
 }
 
 // Append adds a message to the the collection
@@ -130,4 +130,17 @@ type MessagesResponse struct {
 	Status       Status            `json:"status"`
 	Responses    []MessageResponse `json:"responses"`
 	Reason       string            `json:"reason,omitempty"`
+}
+
+func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse, error) {
+	body, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessagesResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
 }
