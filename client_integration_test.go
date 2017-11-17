@@ -170,8 +170,6 @@ func TestFacebookMessages(t *testing.T) {
 	})
 
 	t.Run("multiple request response objects", func(t *testing.T) {
-		t.SkipNow() // as of 2017-11-16 chatbase does return `all_succeeded: true` with reason: "All messages errored."
-
 		requestPayload, requestErr := readFixture("testdata/facebook_single_request.json")
 		if requestErr != nil {
 			t.Fatalf("Unexpected error %v", requestErr)
@@ -183,7 +181,7 @@ func TestFacebookMessages(t *testing.T) {
 
 		client := chatbase.New(apiKey)
 		fbMessages := chatbase.FacebookRequestResponses{}
-		for i := 0; i < 1; i++ {
+		for i := 0; i < 2; i++ {
 			fbMessage := client.FacebookRequestResponse(requestPayload, responsePayload)
 			fbMessage.SetIntent(fmt.Sprintf("number-%d", i))
 			fbMessages.Append(fbMessage)
@@ -192,7 +190,6 @@ func TestFacebookMessages(t *testing.T) {
 		if responseErr != nil {
 			t.Fatalf("Unexpected error %v", responseErr)
 		}
-		fmt.Printf("response %#v\n", response)
 		if !response.Status.OK() {
 			t.Fatalf("Unexpected status %v with reason %v", response.Status, response.Reason)
 		}

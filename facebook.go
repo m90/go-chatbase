@@ -10,6 +10,8 @@ import (
 var (
 	facebookMessageEndpoint  = "https://chatbase.com/api/facebook/message_received"
 	facebookMessagesEndpoint = "https://chatbase.com/api/facebook/message_received_batch"
+	facebookRequestEndpoint  = "https://chatbase.com/api/facebook/send_message"
+	facebookRequestsEndpoint = "https://chatbase.com/api/facebook/send_message_batch"
 )
 
 // FacebookFields contains metadata about a native Facebook message
@@ -82,7 +84,7 @@ func (f *FacebookMessage) SetVersion(v string) *FacebookMessage {
 
 // Submit tries to deliver a single Facebook message to chatbase
 func (f *FacebookMessage) Submit() (*MessageResponse, error) {
-	return postSingleFacebookItem(f, f.APIKey)
+	return postSingleFacebookItem(f, f.APIKey, facebookMessageEndpoint)
 }
 
 // FacebookMessages is a collection of Facecbook Message
@@ -108,7 +110,7 @@ func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 		return nil, errors.New("cannot submit empty collection")
 	}
 	apiKey := (*f)[0].APIKey
-	return postMultipleFacebookItems(f, apiKey)
+	return postMultipleFacebookItems(f, apiKey, facebookMessagesEndpoint)
 }
 
 func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
@@ -125,8 +127,8 @@ func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error)
 	return body, nil
 }
 
-func postSingleFacebookItem(v interface{}, apiKey string) (*MessageResponse, error) {
-	body, err := postFacebook(facebookMessageEndpoint, apiKey, v)
+func postSingleFacebookItem(v interface{}, apiKey, endpoint string) (*MessageResponse, error) {
+	body, err := postFacebook(endpoint, apiKey, v)
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +140,8 @@ func postSingleFacebookItem(v interface{}, apiKey string) (*MessageResponse, err
 	return &responseData, nil
 }
 
-func postMultipleFacebookItems(v interface{}, apiKey string) (*MessagesResponse, error) {
-	body, err := postFacebook(facebookMessagesEndpoint, apiKey, v)
+func postMultipleFacebookItems(v interface{}, apiKey, endpoint string) (*MessagesResponse, error) {
+	body, err := postFacebook(endpoint, apiKey, v)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +199,7 @@ func (f *FacebookRequestResponse) SetVersion(v string) *FacebookRequestResponse 
 
 // Submit tries to send the request/response pair to Chatbase
 func (f *FacebookRequestResponse) Submit() (*MessageResponse, error) {
-	return postSingleFacebookItem(f, f.APIKey)
+	return postSingleFacebookItem(f, f.APIKey, facebookRequestEndpoint)
 }
 
 // FacebookRequestResponses is a collection of FacebookRequestResponse
@@ -217,7 +219,7 @@ func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 		return nil, errors.New("cannot submit empty collection")
 	}
 	apiKey := (*f)[0].APIKey
-	return postMultipleFacebookItems(f, apiKey)
+	return postMultipleFacebookItems(f, apiKey, facebookRequestsEndpoint)
 }
 
 // Append adds the additional message to the collection
