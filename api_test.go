@@ -62,8 +62,8 @@ func TestApi(t *testing.T) {
 			if test.expectError != (err != nil) {
 				t.Errorf("Unexpected error %v", err)
 			}
-			if err != nil {
-				t.SkipNow()
+			if test.expectError {
+				return
 			}
 			defer body.Close()
 			read, readErr := ioutil.ReadAll(body)
