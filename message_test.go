@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"encoding/json"
 	"reflect"
 	"testing"
 )
@@ -33,13 +34,26 @@ func TestMessage_Setters(t *testing.T) {
 	})
 }
 
-func TestMessage_Append(t *testing.T) {
+func TestMessages_Append(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		msgs := Messages{}
 		msgs.Append(&Message{APIKey: "foo-bar", UserID: "bar-foo"})
 		expected := Messages{{APIKey: "foo-bar", UserID: "bar-foo"}}
 		if !reflect.DeepEqual(expected, msgs) {
 			t.Errorf("Expected %#v, got %#v", expected, msgs)
+		}
+	})
+}
+
+func TestMessages_MarshalJSON(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := Messages{}
+		b, err := json.Marshal(m)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"messages":[]}` {
+			t.Errorf("Unexpected result %v", s)
 		}
 	})
 }

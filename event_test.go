@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"encoding/json"
 	"reflect"
 	"testing"
 )
@@ -130,6 +131,19 @@ func TestEvent_SetProperty(t *testing.T) {
 		}
 		if err := e.AddProperty("nope", []int{99}); err == nil {
 			t.Error("Expected error, got nil")
+		}
+	})
+}
+
+func TestEvent_MarshalJSON(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		e := Events{Event{APIKey: "secret!"}}
+		b, err := json.Marshal(e)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"api_key":"secret!","events":[{"api_key":"secret!","user_id":"","intent":"","properties":null}]}` {
+			t.Errorf("Unexpected result %v", s)
 		}
 	})
 }

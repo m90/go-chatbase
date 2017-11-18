@@ -104,7 +104,7 @@ func (m *Messages) Submit() (*MessagesResponse, error) {
 	})
 }
 
-// Append adds a message to the the collection
+// Append adds messages to the the collection
 func (m *Messages) Append(addition ...*Message) *Messages {
 	for _, a := range addition {
 		*m = append(*m, *a)

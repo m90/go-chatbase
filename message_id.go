@@ -29,7 +29,7 @@ func (m *MessageID) String() string {
 	return string(*m)
 }
 
-// Int returns the ID's int representation
-func (m *MessageID) Int() (int64, error) {
+// Int64 returns the ID's int64 representation
+func (m *MessageID) Int64() (int64, error) {
 	return strconv.ParseInt(m.String(), 10, 0)
 }

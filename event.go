@@ -78,7 +78,8 @@ func (e *Events) Submit() error {
 	return err
 }
 
-// Append adds events to the the collection
+// Append adds events to the the collection. The collection should not
+// contain events using different API keys
 func (e *Events) Append(addition ...*Event) *Events {
 	for _, a := range addition {
 		*e = append(*e, *a)

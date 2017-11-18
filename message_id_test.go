@@ -55,3 +55,23 @@ func TestString_MessageID(t *testing.T) {
 		}
 	})
 }
+
+func TestInt64_MessageID(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := MessageID("123998")
+		i, err := m.Int64()
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if i != 123998 {
+			t.Errorf("Expected 123998, got %v", i)
+		}
+	})
+	t.Run("error", func(t *testing.T) {
+		m := MessageID("zalgo")
+		_, err := m.Int64()
+		if err == nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+	})
+}

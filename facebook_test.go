@@ -28,6 +28,33 @@ func TestFacebookMessage_Setters(t *testing.T) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
 		}
 	})
+	t.Run("nil fields", func(t *testing.T) {
+		fixture := FacebookMessage{}
+
+		m := fixture
+		m.SetIntent("test")
+		if m.Fields.Intent != "test" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetNotHandled(true)
+		if m.Fields.NotHandled != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetFeedback(true)
+		if m.Fields.Feedback != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetVersion("1.2.3")
+		if m.Fields.Version != "1.2.3" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+	})
 }
 func TestFacebookRequestResponse_Setters(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
@@ -48,6 +75,33 @@ func TestFacebookRequestResponse_Setters(t *testing.T) {
 		m.SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.3.1")
 		if !reflect.DeepEqual(expected, m) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
+		}
+	})
+	t.Run("nil fields", func(t *testing.T) {
+		fixture := FacebookRequestResponse{}
+
+		m := fixture
+		m.SetIntent("test")
+		if m.Fields.Intent != "test" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetNotHandled(true)
+		if m.Fields.NotHandled != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetFeedback(true)
+		if m.Fields.Feedback != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetVersion("1.2.3")
+		if m.Fields.Version != "1.2.3" {
+			t.Errorf("Unexpected fields %v", m.Fields)
 		}
 	})
 }
@@ -118,4 +172,49 @@ func TestFacebookMessage_MarshalJSON(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMarshalJSON_FacebookRequestResponses(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		f := FacebookRequestResponses{}
+		b, err := json.Marshal(f)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"messages":[]}` {
+			t.Errorf("Unexpected result %v", s)
+		}
+	})
+}
+
+func TestMarshalJSON_FacebookMessages(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		f := FacebookMessages{}
+		b, err := json.Marshal(f)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"messages":[]}` {
+			t.Errorf("Unexpected result %v", s)
+		}
+	})
+}
+
+func TestAppend_FacebookMessages(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := FacebookMessages{}
+		m.Append(&FacebookMessage{}, &FacebookMessage{})
+		if l := len(m); l != 2 {
+			t.Errorf("Unexpected length %v", l)
+		}
+	})
+}
+func TestAppend_FacebookRequestResponses(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := FacebookRequestResponses{}
+		m.Append(&FacebookRequestResponse{}, &FacebookRequestResponse{})
+		if l := len(m); l != 2 {
+			t.Errorf("Unexpected length %v", l)
+		}
+	})
 }
