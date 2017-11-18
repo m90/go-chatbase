@@ -53,7 +53,7 @@ func TestMessages(t *testing.T) {
 		}
 		update := client.Update(msgRes.MessageID.String())
 		update.SetVersion("1.2.3")
-		update.SetNotHandled("true")
+		update.SetNotHandled(true)
 		updateRes, updateErr := update.Submit()
 		if updateErr != nil {
 			t.Fatalf("Unexpected error %v", updateErr)

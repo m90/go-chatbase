@@ -27,8 +27,11 @@ func (u *Update) SetIntent(i string) *Update {
 }
 
 // SetNotHandled adds an optional not handled value to update
-func (u *Update) SetNotHandled(n string) *Update {
-	u.NotHandled = n
+func (u *Update) SetNotHandled(n bool) *Update {
+	u.NotHandled = ""
+	if n {
+		u.NotHandled = "true"
+	}
 	return u
 }
 

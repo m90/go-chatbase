@@ -107,7 +107,7 @@ func TestUpdate_Setters(t *testing.T) {
 			Feedback:   "true",
 			Version:    "1.2.34",
 		}
-		u.SetIntent("test-things").SetNotHandled("true").SetFeedback("true").SetVersion("1.2.34")
+		u.SetIntent("test-things").SetNotHandled(true).SetFeedback("true").SetVersion("1.2.34")
 		if !reflect.DeepEqual(expected, u) {
 			t.Errorf("Expected %#v, got %#v", expected, u)
 		}

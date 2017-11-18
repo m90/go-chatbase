@@ -36,3 +36,29 @@ func apiPost(endpoint string, v interface{}) (io.ReadCloser, error) {
 func apiPut(endpoint string, v interface{}) (io.ReadCloser, error) {
 	return api(http.MethodPut, endpoint, v)
 }
+
+func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, error) {
+	body, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessageResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
+
+func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse, error) {
+	body, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := MessagesResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}
