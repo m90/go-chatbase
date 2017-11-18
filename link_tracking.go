@@ -2,7 +2,6 @@ package chatbase
 
 import (
 	"io"
-	"net/url"
 )
 
 var (
@@ -38,14 +37,14 @@ func (l *Link) Submit() (*LinkResponse, error) {
 }
 
 func (l *Link) String() string {
-	u, _ := url.Parse(redirectURL)
-	q := u.Query()
-	q.Set("api_key", l.APIKey)
-	q.Set("url", l.URL)
-	q.Set("platform", l.Platform)
-	if l.Version != "" {
-		q.Set("version", l.Version)
+	params := map[string]string{
+		"api_key":  l.APIKey,
+		"url":      l.URL,
+		"platform": l.Platform,
 	}
-	u.RawQuery = q.Encode()
-	return u.String()
+	if l.Version != "" {
+		params["version"] = l.Version
+	}
+	u, _ := augmentURL(redirectURL, params)
+	return u
 }

@@ -51,7 +51,7 @@ func (c *Client) Event(userID, intent string) *Event {
 func (c *Client) Update(messageID string) *Update {
 	return &Update{
 		APIKey:    c.String(),
-		MessageID: messageID,
+		MessageID: MessageID(messageID),
 	}
 }
 

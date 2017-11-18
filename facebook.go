@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"net/url"
 )
 
 var (
@@ -116,13 +115,14 @@ func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 }
 
 func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
-	u, uErr := url.Parse(endpoint)
-	if uErr != nil {
-		return nil, uErr
+	ep, epErr := augmentURL(endpoint, map[string]string{
+		"api_key": apiKey,
+	})
+	if epErr != nil {
+		return nil, epErr
 	}
-	u.RawQuery = url.Values{"api_key": []string{apiKey}}.Encode()
 
-	body, err := apiPost(u.String(), v)
+	body, err := apiPost(ep, v)
 	if err != nil {
 		return nil, err
 	}

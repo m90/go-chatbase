@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
@@ -79,4 +80,17 @@ func decodeResponse(target interface{}, thunk func() (io.ReadCloser, error)) (in
 		return nil, err
 	}
 	return target, nil
+}
+
+func augmentURL(endpoint string, params map[string]string) (string, error) {
+	e, endpointErr := url.Parse(endpoint)
+	if endpointErr != nil {
+		return "", endpointErr
+	}
+	q := e.Query()
+	for key, value := range params {
+		q.Set(key, value)
+	}
+	e.RawQuery = q.Encode()
+	return e.String(), nil
 }

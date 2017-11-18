@@ -2,7 +2,6 @@ package chatbase
 
 import (
 	"io"
-	"net/url"
 )
 
 var (
@@ -11,12 +10,12 @@ var (
 
 // Update contains data about an existing message that should be updated
 type Update struct {
-	APIKey     string `json:"-"`
-	MessageID  string `json:"-"`
-	Intent     string `json:"intent,omitempty"`
-	NotHandled string `json:"not_handled,omitempty"`
-	Feedback   string `json:"feedback,omitempty"`
-	Version    string `json:"version,omitempty"`
+	APIKey     string    `json:"-"`
+	MessageID  MessageID `json:"-"`
+	Intent     string    `json:"intent,omitempty"`
+	NotHandled string    `json:"not_handled,omitempty"`
+	Feedback   string    `json:"feedback,omitempty"`
+	Version    string    `json:"version,omitempty"`
 }
 
 // SetIntent adds an optional "intent" value to an update
@@ -49,16 +48,14 @@ func (u *Update) SetVersion(v string) *Update {
 // Submit tries to deliver the update to Chatbase
 func (u *Update) Submit() (*UpdateResponse, error) {
 	return newUpdateResponse(func() (io.ReadCloser, error) {
-		e, endpointErr := url.Parse(updateEndpoint)
-		if endpointErr != nil {
-			return nil, endpointErr
+		ep, epErr := augmentURL(updateEndpoint, map[string]string{
+			"api_key":    u.APIKey,
+			"message_id": u.MessageID.String(),
+		})
+		if epErr != nil {
+			return nil, epErr
 		}
-		q := e.Query()
-		q.Set("api_key", u.APIKey)
-		q.Set("message_id", u.MessageID)
-		e.RawQuery = q.Encode()
-
-		body, bodyErr := apiPut(e.String(), u)
+		body, bodyErr := apiPut(ep, u)
 		if bodyErr != nil {
 			return nil, bodyErr
 		}
