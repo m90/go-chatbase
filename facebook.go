@@ -97,10 +97,12 @@ func (f FacebookMessages) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// Append adds an additional message to the collection. The collection
-// cannot contain messages using different API keys
-func (f *FacebookMessages) Append(addition *FacebookMessage) *FacebookMessages {
-	*f = append(*f, *addition)
+// Append adds additional messages to the collection. The collection
+// should not contain messages using different API keys
+func (f *FacebookMessages) Append(addition ...*FacebookMessage) *FacebookMessages {
+	for _, a := range addition {
+		*f = append(*f, *a)
+	}
 	return f
 }
 
@@ -203,7 +205,7 @@ func (f FacebookRequestResponses) MarshalJSON() ([]byte, error) {
 }
 
 // Submit tries to send the collection of request/response pairs to Chatbase.
-// The collection cannot contain messages using different API keys
+// The collection should not contain messages using different API keys
 func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 	if len(*f) == 0 {
 		return nil, errors.New("cannot submit empty collection")
@@ -212,9 +214,11 @@ func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 	return postMultipleFacebookItems(f, apiKey, facebookRequestsEndpoint)
 }
 
-// Append adds an additional message to the collection. The collection cannot
+// Append adds additional messages to the collection. The collection should not
 // contain messages using different API keys
-func (f *FacebookRequestResponses) Append(addition *FacebookRequestResponse) *FacebookRequestResponses {
-	*f = append(*f, *addition)
+func (f *FacebookRequestResponses) Append(addition ...*FacebookRequestResponse) *FacebookRequestResponses {
+	for _, a := range addition {
+		*f = append(*f, *a)
+	}
 	return f
 }

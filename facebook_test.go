@@ -2,11 +2,7 @@ package chatbase
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -32,6 +28,33 @@ func TestFacebookMessage_Setters(t *testing.T) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
 		}
 	})
+	t.Run("nil fields", func(t *testing.T) {
+		fixture := FacebookMessage{}
+
+		m := fixture
+		m.SetIntent("test")
+		if m.Fields.Intent != "test" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetNotHandled(true)
+		if m.Fields.NotHandled != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetFeedback(true)
+		if m.Fields.Feedback != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetVersion("1.2.3")
+		if m.Fields.Version != "1.2.3" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+	})
 }
 func TestFacebookRequestResponse_Setters(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
@@ -52,6 +75,33 @@ func TestFacebookRequestResponse_Setters(t *testing.T) {
 		m.SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.3.1")
 		if !reflect.DeepEqual(expected, m) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
+		}
+	})
+	t.Run("nil fields", func(t *testing.T) {
+		fixture := FacebookRequestResponse{}
+
+		m := fixture
+		m.SetIntent("test")
+		if m.Fields.Intent != "test" {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetNotHandled(true)
+		if m.Fields.NotHandled != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetFeedback(true)
+		if m.Fields.Feedback != true {
+			t.Errorf("Unexpected fields %v", m.Fields)
+		}
+
+		m = fixture
+		m.SetVersion("1.2.3")
+		if m.Fields.Version != "1.2.3" {
+			t.Errorf("Unexpected fields %v", m.Fields)
 		}
 	})
 }
@@ -124,144 +174,47 @@ func TestFacebookMessage_MarshalJSON(t *testing.T) {
 	}
 }
 
-func TestFacebookMessage_Submit(t *testing.T) {
-	tests := []struct {
-		name             string
-		handler          http.Handler
-		message          FacebookMessage
-		expectError      bool
-		expectedResponse *MessageResponse
-	}{
-		{
-			"default",
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Query().Get("api_key") != "top-secret" {
-					http.Error(w, "missing api key", http.StatusBadRequest)
-					return
-				}
-				body, bodyErr := ioutil.ReadAll(r.Body)
-				if bodyErr != nil {
-					http.Error(w, "bad payload", http.StatusInternalServerError)
-					return
-				}
-				r.Body.Close()
-				s := string(body)
-				if !strings.Contains(s, `"recipient":"zuck"`) {
-					http.Error(w, "missing data from payload", http.StatusBadRequest)
-					return
-				}
-				b, _ := ioutil.ReadFile("testdata/message_response_ok.json")
-				w.Write(b)
-			}),
-			FacebookMessage{
-				APIKey: "top-secret",
-				Payload: map[string]string{
-					"recipient": "zuck",
-				},
-			},
-			false,
-			&MessageResponse{
-				MessageID: "abc987",
-				Status:    true,
-			},
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			oldEndpoint := facebookMessageEndpoint
-			defer func() { facebookMessageEndpoint = oldEndpoint }()
-
-			ts := httptest.NewServer(test.handler)
-			facebookMessageEndpoint = ts.URL
-
-			res, err := test.message.Submit()
-			if test.expectError != (err != nil) {
-				t.Errorf("Unexpected error value %v", err)
-			}
-			if !reflect.DeepEqual(test.expectedResponse, res) {
-				t.Errorf("Expected %#v, got %#v", test.expectedResponse, res)
-			}
-		})
-	}
+func TestMarshalJSON_FacebookRequestResponses(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		f := FacebookRequestResponses{}
+		b, err := json.Marshal(f)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"messages":[]}` {
+			t.Errorf("Unexpected result %v", s)
+		}
+	})
 }
-func TestFacebookMessages_Submit(t *testing.T) {
-	tests := []struct {
-		name             string
-		handler          http.Handler
-		messages         FacebookMessages
-		expectError      bool
-		expectedResponse *MessagesResponse
-	}{
-		{
-			"default",
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Query().Get("api_key") != "top-secret" {
-					http.Error(w, "missing api key", http.StatusBadRequest)
-					return
-				}
-				body, bodyErr := ioutil.ReadAll(r.Body)
-				if bodyErr != nil {
-					http.Error(w, "bad payload", http.StatusInternalServerError)
-					return
-				}
-				r.Body.Close()
-				s := string(body)
-				if !strings.Contains(s, `"recipient":"zuck"`) {
-					http.Error(w, "missing data from payload", http.StatusBadRequest)
-					return
-				}
-				b, _ := ioutil.ReadFile("testdata/messages_response_ok.json")
-				w.Write(b)
-			}),
-			FacebookMessages{
-				{
-					APIKey: "top-secret",
-					Payload: map[string]string{
-						"recipient": "zuck",
-					},
-				},
-				{
-					APIKey: "top-secret",
-					Payload: map[string]string{
-						"recipient": "bill",
-					},
-				},
-			},
-			false,
-			&MessagesResponse{
-				AllSucceeded: true,
-				Responses: []MessageResponse{
-					{MessageID: "123456789", Status: true},
-					{MessageID: "987654321", Status: true},
-				},
-				Status: true,
-			},
-		},
-		{
-			"empty",
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("OK!"))
-			}),
-			FacebookMessages{},
-			true,
-			nil,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			oldEndpoint := facebookMessagesEndpoint
-			defer func() { facebookMessagesEndpoint = oldEndpoint }()
 
-			ts := httptest.NewServer(test.handler)
-			facebookMessagesEndpoint = ts.URL
+func TestMarshalJSON_FacebookMessages(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		f := FacebookMessages{}
+		b, err := json.Marshal(f)
+		if err != nil {
+			t.Fatalf("Unexpected error %v", err)
+		}
+		if s := string(b); s != `{"messages":[]}` {
+			t.Errorf("Unexpected result %v", s)
+		}
+	})
+}
 
-			res, err := test.messages.Submit()
-			if test.expectError != (err != nil) {
-				t.Errorf("Unexpected error value %v", err)
-			}
-			if !reflect.DeepEqual(test.expectedResponse, res) {
-				t.Errorf("Expected %#v, got %#v", test.expectedResponse, res)
-			}
-		})
-	}
+func TestAppend_FacebookMessages(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := FacebookMessages{}
+		m.Append(&FacebookMessage{}, &FacebookMessage{})
+		if l := len(m); l != 2 {
+			t.Errorf("Unexpected length %v", l)
+		}
+	})
+}
+func TestAppend_FacebookRequestResponses(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		m := FacebookRequestResponses{}
+		m.Append(&FacebookRequestResponse{}, &FacebookRequestResponse{})
+		if l := len(m); l != 2 {
+			t.Errorf("Unexpected length %v", l)
+		}
+	})
 }
