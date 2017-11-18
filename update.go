@@ -1,8 +1,7 @@
 package chatbase
 
 import (
-	"encoding/json"
-	"fmt"
+	"io"
 	"net/url"
 )
 
@@ -49,30 +48,22 @@ func (u *Update) SetVersion(v string) *Update {
 
 // Submit tries to deliver the update to Chatbase
 func (u *Update) Submit() (*UpdateResponse, error) {
-	e, endpointErr := url.Parse(updateEndpoint)
-	if endpointErr != nil {
-		return nil, endpointErr
-	}
-	q := e.Query()
-	q.Set("api_key", u.APIKey)
-	q.Set("message_id", u.MessageID)
-	e.RawQuery = q.Encode()
+	return newUpdateResponse(func() (io.ReadCloser, error) {
+		e, endpointErr := url.Parse(updateEndpoint)
+		if endpointErr != nil {
+			return nil, endpointErr
+		}
+		q := e.Query()
+		q.Set("api_key", u.APIKey)
+		q.Set("message_id", u.MessageID)
+		e.RawQuery = q.Encode()
 
-	body, bodyErr := apiPut(e.String(), u)
-	if bodyErr != nil {
-		return nil, bodyErr
-	}
-	defer body.Close()
-
-	responseData := UpdateResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-
-	if !responseData.Status.OK() {
-		return &responseData, fmt.Errorf("failed sending messages with status %v", responseData.Status)
-	}
-	return &responseData, nil
+		body, bodyErr := apiPut(e.String(), u)
+		if bodyErr != nil {
+			return nil, bodyErr
+		}
+		return body, nil
+	})
 }
 
 // UpdateResponse describes a Chatbase response to an update submission

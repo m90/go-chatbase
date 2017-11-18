@@ -58,7 +58,7 @@ func TestApi(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ts := httptest.NewServer(test.handler)
-			body, err := api(test.method, ts.URL, test.payload)
+			body, err := apiCall(test.method, ts.URL, test.payload)
 			if test.expectError != (err != nil) {
 				t.Errorf("Unexpected error %v", err)
 			}

@@ -1,7 +1,9 @@
+// Package chatbase provides a client and types for interacting with the
+// Chatbase bot analytics platform - https://chatbase.com
 package chatbase
 
 // Client wraps a Chatbase API Key and can be used to
-// collect and submit messages and events
+// generate messages, events and link
 type Client string
 
 // New returns a new Client using the given Chatbase API Key

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func api(method, endpoint string, v interface{}) (io.ReadCloser, error) {
+func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
 	payload, payloadErr := json.Marshal(v)
 	if payloadErr != nil {
 		return nil, payloadErr
@@ -30,48 +30,53 @@ func api(method, endpoint string, v interface{}) (io.ReadCloser, error) {
 }
 
 func apiPost(endpoint string, v interface{}) (io.ReadCloser, error) {
-	return api(http.MethodPost, endpoint, v)
+	return apiCall(http.MethodPost, endpoint, v)
 }
 
 func apiPut(endpoint string, v interface{}) (io.ReadCloser, error) {
-	return api(http.MethodPut, endpoint, v)
+	return apiCall(http.MethodPut, endpoint, v)
 }
 
 func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, error) {
-	body, err := thunk()
-	if err != nil {
-		return nil, err
+	data, err := decodeResponse(&MessageResponse{}, thunk)
+	if res, ok := data.(*MessageResponse); ok {
+		return res, err
 	}
-	defer body.Close()
-	responseData := MessageResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return nil, fmt.Errorf("%v was not of expected type", data)
 }
 
 func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse, error) {
-	body, err := thunk()
-	if err != nil {
-		return nil, err
+	data, err := decodeResponse(&MessagesResponse{}, thunk)
+	if res, ok := data.(*MessagesResponse); ok {
+		return res, err
 	}
-	defer body.Close()
-	responseData := MessagesResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
-		return nil, err
-	}
-	return &responseData, nil
+	return nil, fmt.Errorf("%v was not of expected type", data)
 }
 
 func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error) {
+	data, err := decodeResponse(&LinkResponse{}, thunk)
+	if res, ok := data.(*LinkResponse); ok {
+		return res, err
+	}
+	return nil, fmt.Errorf("%v was not of expected type", data)
+}
+
+func newUpdateResponse(thunk func() (io.ReadCloser, error)) (*UpdateResponse, error) {
+	data, err := decodeResponse(&UpdateResponse{}, thunk)
+	if res, ok := data.(*UpdateResponse); ok {
+		return res, err
+	}
+	return nil, fmt.Errorf("%v was not of expected type", data)
+}
+
+func decodeResponse(target interface{}, thunk func() (io.ReadCloser, error)) (interface{}, error) {
 	body, err := thunk()
 	if err != nil {
 		return nil, err
 	}
 	defer body.Close()
-	responseData := LinkResponse{}
-	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+	if err := json.NewDecoder(body).Decode(target); err != nil {
 		return nil, err
 	}
-	return &responseData, nil
+	return target, nil
 }

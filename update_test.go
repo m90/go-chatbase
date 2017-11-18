@@ -49,7 +49,7 @@ func TestSubmit_Update(t *testing.T) {
 				w.Write(d)
 			}),
 			Update{},
-			true,
+			false,
 			&UpdateResponse{
 				Status:  false,
 				Updated: []string{},
