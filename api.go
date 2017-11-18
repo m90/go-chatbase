@@ -7,6 +7,11 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
+)
+
+var (
+	client = http.Client{Timeout: time.Duration(5 * time.Second)}
 )
 
 func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
@@ -20,7 +25,7 @@ func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
 		return nil, reqErr
 	}
 	req.Header.Set("Content-Type", "application/json")
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +44,7 @@ func apiPut(endpoint string, v interface{}) (io.ReadCloser, error) {
 }
 
 func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, error) {
-	data, err := decodeResponse(&MessageResponse{}, thunk)
+	data, err := decodeInto(&MessageResponse{}, thunk)
 	if res, ok := data.(*MessageResponse); ok {
 		return res, err
 	}
@@ -47,7 +52,7 @@ func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, 
 }
 
 func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse, error) {
-	data, err := decodeResponse(&MessagesResponse{}, thunk)
+	data, err := decodeInto(&MessagesResponse{}, thunk)
 	if res, ok := data.(*MessagesResponse); ok {
 		return res, err
 	}
@@ -55,7 +60,7 @@ func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse
 }
 
 func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error) {
-	data, err := decodeResponse(&LinkResponse{}, thunk)
+	data, err := decodeInto(&LinkResponse{}, thunk)
 	if res, ok := data.(*LinkResponse); ok {
 		return res, err
 	}
@@ -63,17 +68,20 @@ func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error)
 }
 
 func newUpdateResponse(thunk func() (io.ReadCloser, error)) (*UpdateResponse, error) {
-	data, err := decodeResponse(&UpdateResponse{}, thunk)
+	data, err := decodeInto(&UpdateResponse{}, thunk)
 	if res, ok := data.(*UpdateResponse); ok {
 		return res, err
 	}
 	return nil, fmt.Errorf("%v was not of expected type", data)
 }
 
-func decodeResponse(target interface{}, thunk func() (io.ReadCloser, error)) (interface{}, error) {
+func decodeInto(target interface{}, thunk func() (io.ReadCloser, error)) (interface{}, error) {
 	body, err := thunk()
 	if err != nil {
 		return nil, err
+	}
+	if body == nil {
+		return nil, nil
 	}
 	defer body.Close()
 	if err := json.NewDecoder(body).Decode(target); err != nil {
