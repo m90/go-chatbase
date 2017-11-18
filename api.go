@@ -62,3 +62,16 @@ func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse
 	}
 	return &responseData, nil
 }
+
+func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error) {
+	body, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	responseData := LinkResponse{}
+	if err := json.NewDecoder(body).Decode(&responseData); err != nil {
+		return nil, err
+	}
+	return &responseData, nil
+}

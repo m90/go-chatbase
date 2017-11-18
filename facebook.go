@@ -30,7 +30,7 @@ type FacebookMessage struct {
 }
 
 // MarshalJSON ensures the message is merged with the metadata in the way that
-// Chatbase expects it to bbe
+// Chatbase expects it to be
 func (f FacebookMessage) MarshalJSON() ([]byte, error) {
 	intermediate, intermediateErr := json.Marshal(f.Payload)
 	if intermediateErr != nil {
@@ -46,7 +46,7 @@ func (f FacebookMessage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-// SetIntent adds an optional intent value to the message
+// SetIntent adds an optional "intent" value to the message
 func (f *FacebookMessage) SetIntent(i string) *FacebookMessage {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -55,7 +55,7 @@ func (f *FacebookMessage) SetIntent(i string) *FacebookMessage {
 	return f
 }
 
-// SetNotHandled adds an optional not handled value to the message
+// SetNotHandled adds an optional "not handled" value to the message
 func (f *FacebookMessage) SetNotHandled(n bool) *FacebookMessage {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -64,7 +64,7 @@ func (f *FacebookMessage) SetNotHandled(n bool) *FacebookMessage {
 	return f
 }
 
-// SetFeedback adds an optional feedback value to the message
+// SetFeedback adds an optional "feedback" value to the message
 func (f *FacebookMessage) SetFeedback(n bool) *FacebookMessage {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -73,7 +73,7 @@ func (f *FacebookMessage) SetFeedback(n bool) *FacebookMessage {
 	return f
 }
 
-// SetVersion adds an optional version value to the message
+// SetVersion adds an optional "version" value to the message
 func (f *FacebookMessage) SetVersion(v string) *FacebookMessage {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -87,7 +87,7 @@ func (f *FacebookMessage) Submit() (*MessageResponse, error) {
 	return postSingleFacebookItem(f, f.APIKey, facebookMessageEndpoint)
 }
 
-// FacebookMessages is a collection of Facecbook Message
+// FacebookMessages is a collection of FacecbookMessage
 type FacebookMessages []FacebookMessage
 
 // MarshalJSON ensures the messages are wrapped in a top-level object before
@@ -98,13 +98,15 @@ func (f FacebookMessages) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// Append adds the additional message to the collection
+// Append adds an additional message to the collection. The collection
+// cannot contain messages using different API keys
 func (f *FacebookMessages) Append(addition *FacebookMessage) *FacebookMessages {
 	*f = append(*f, *addition)
 	return f
 }
 
-// Submit tries to deliver the set of messages to chatbase
+// Submit tries to deliver the set of messages to Chatbase. The collection
+// cannot contain messages using different API keys
 func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 	if len(*f) == 0 {
 		return nil, errors.New("cannot submit empty collection")
@@ -139,7 +141,8 @@ func postMultipleFacebookItems(v interface{}, apiKey, endpoint string) (*Message
 	})
 }
 
-// FacebookRequestResponse is a payload that contains both request and response
+// FacebookRequestResponse is a payload that contains both
+// request and response data
 type FacebookRequestResponse struct {
 	APIKey   string          `json:"-"`
 	Request  interface{}     `json:"request_body"`
@@ -147,7 +150,7 @@ type FacebookRequestResponse struct {
 	Fields   *FacebookFields `json:"chatbase_fields"`
 }
 
-// SetIntent adds an optional intent value to the message
+// SetIntent adds an optional "intent" value to the pair
 func (f *FacebookRequestResponse) SetIntent(i string) *FacebookRequestResponse {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -156,7 +159,7 @@ func (f *FacebookRequestResponse) SetIntent(i string) *FacebookRequestResponse {
 	return f
 }
 
-// SetNotHandled adds an optional not handled value to the message
+// SetNotHandled adds an optional "not handled" value to the pair
 func (f *FacebookRequestResponse) SetNotHandled(n bool) *FacebookRequestResponse {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -165,7 +168,7 @@ func (f *FacebookRequestResponse) SetNotHandled(n bool) *FacebookRequestResponse
 	return f
 }
 
-// SetFeedback adds an optional feedback value to the message
+// SetFeedback adds an optional "feedback" value to the pair
 func (f *FacebookRequestResponse) SetFeedback(n bool) *FacebookRequestResponse {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -174,7 +177,7 @@ func (f *FacebookRequestResponse) SetFeedback(n bool) *FacebookRequestResponse {
 	return f
 }
 
-// SetVersion adds an optional version value to the message
+// SetVersion adds an optional "version" value to the pair
 func (f *FacebookRequestResponse) SetVersion(v string) *FacebookRequestResponse {
 	if f.Fields == nil {
 		f.Fields = &FacebookFields{}
@@ -183,7 +186,7 @@ func (f *FacebookRequestResponse) SetVersion(v string) *FacebookRequestResponse 
 	return f
 }
 
-// Submit tries to send the request/response pair to Chatbase
+// Submit tries to deliver the pair to Chatbase
 func (f *FacebookRequestResponse) Submit() (*MessageResponse, error) {
 	return postSingleFacebookItem(f, f.APIKey, facebookRequestEndpoint)
 }
@@ -199,7 +202,8 @@ func (f FacebookRequestResponses) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// Submit tries to send the collection of request/response pairs to Chatbase
+// Submit tries to send the collection of request/response pairs to Chatbase.
+// The collection cannot contain messages using different API keys
 func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 	if len(*f) == 0 {
 		return nil, errors.New("cannot submit empty collection")
@@ -208,7 +212,8 @@ func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 	return postMultipleFacebookItems(f, apiKey, facebookRequestsEndpoint)
 }
 
-// Append adds the additional message to the collection
+// Append adds an additional message to the collection. The collection cannot
+// contain messages using different API keys
 func (f *FacebookRequestResponses) Append(addition *FacebookRequestResponse) *FacebookRequestResponses {
 	*f = append(*f, *addition)
 	return f

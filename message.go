@@ -20,7 +20,7 @@ var (
 	messageEndpoint  = "https://chatbase.com/api/message"
 )
 
-// Message contains info about a generic chat message
+// Message contains data about a generic chat message
 type Message struct {
 	APIKey     string      `json:"api_key"`
 	Type       MessageType `json:"type"`
@@ -34,37 +34,37 @@ type Message struct {
 	Version    string      `json:"version,omitempty"`
 }
 
-// SetMessage adds an optional message value
+// SetMessage adds an optional "message" value to a message
 func (m *Message) SetMessage(msg string) *Message {
 	m.Message = msg
 	return m
 }
 
-// SetIntent adds an optional intent value
+// SetIntent adds an optional "intent" value to a message
 func (m *Message) SetIntent(i string) *Message {
 	m.Intent = i
 	return m
 }
 
-// SetNotHandled adds an optional not handled flag
+// SetNotHandled adds an optional "not handled" value to a message
 func (m *Message) SetNotHandled(n bool) *Message {
 	m.NotHandled = n
 	return m
 }
 
-// SetFeedback adds an optional not feedback flag
+// SetFeedback adds an optional "feedback" value to a message
 func (m *Message) SetFeedback(f bool) *Message {
 	m.Feedback = f
 	return m
 }
 
-// SetVersion adds an optional version value
+// SetVersion adds an optional "version" value to a message
 func (m *Message) SetVersion(v string) *Message {
 	m.Version = v
 	return m
 }
 
-// SetTimeStamp overrides the message's timestamp value
+// SetTimeStamp overrides the message's "timestamp" value
 func (m *Message) SetTimeStamp(t int) *Message {
 	m.TimeStamp = t
 	return m
@@ -77,8 +77,9 @@ func (m *Message) Submit() (*MessageResponse, error) {
 	})
 }
 
-// MessageResponse describes a Chatbase response to sending a single message
-// or is contained in a set of responses when performing batch operations
+// MessageResponse describes a Chatbase response to the submission of
+// a single message. It is also used to represent the result of an item
+// of a collection of messages that have been submitted.
 type MessageResponse struct {
 	MessageID MessageID `json:"message_id"`
 	Status    Status    `json:"status"`
@@ -88,8 +89,8 @@ type MessageResponse struct {
 // Messages is a collection of Message
 type Messages []Message
 
-// MarshalJSON ensures the messages are wrapped in a top-level object before
-// being serialized into JSON
+// MarshalJSON ensures the list of messages is wrapped in a
+// top-level object before being serialized into JSON
 func (m Messages) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"messages": []Message(m),
@@ -111,7 +112,7 @@ func (m *Messages) Append(addition ...*Message) *Messages {
 	return m
 }
 
-// MessagesResponse describes a Chatbase response to sending multiple messages at once
+// MessagesResponse describes a Chatbase response to submitting a set of messages
 type MessagesResponse struct {
 	AllSucceeded bool              `json:"all_succeeded"`
 	Status       Status            `json:"status"`

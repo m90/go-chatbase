@@ -15,7 +15,7 @@ func (c *Client) String() string {
 }
 
 // Message returns a new Message using the client's key and
-// the current time as a timestamp
+// the current time as its "TimeStamp" value
 func (c *Client) Message(typ MessageType, userID, platform string) *Message {
 	return &Message{
 		APIKey:    c.String(),

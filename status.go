@@ -5,12 +5,13 @@ import (
 	"fmt"
 )
 
-// Status describes if an operation was successful
+// Status describes the success of an operation
 type Status bool
 
 // UnmarshalJSON normalizes the int and string values that are being used
 // by Chatbase to represent success or failure. Int values will map to HTTP
-// status codes, otherwise `"success"` is considered true
+// status codes (200 or 400), otherwise "success" is considered true where
+// "failure" is considered false
 func (s *Status) UnmarshalJSON(b []byte) error {
 	var i int
 	if err := json.Unmarshal(b, &i); err == nil {

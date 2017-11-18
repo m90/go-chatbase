@@ -10,7 +10,7 @@ var (
 	eventsEndpoint = "https://api.chatbase.com/apis/v1/events/insert_batch"
 )
 
-// Event describes an event to be sent to the events API
+// Event contains data about an event
 type Event struct {
 	APIKey     string          `json:"api_key"`
 	UserID     string          `json:"user_id"`
@@ -21,19 +21,19 @@ type Event struct {
 	Properties []EventProperty `json:"properties"`
 }
 
-// SetTimeStamp adds an optional timestamp value
+// SetTimeStamp adds an optional "timestamp" value to the event
 func (e *Event) SetTimeStamp(t int) *Event {
 	e.TimeStamp = t
 	return e
 }
 
-// SetPlatform adds an optional platform value
+// SetPlatform adds an optional "platform" value to the event
 func (e *Event) SetPlatform(p string) *Event {
 	e.Platform = p
 	return e
 }
 
-// SetVersion adds an optional version value
+// SetVersion adds an optional "version" value to the event
 func (e *Event) SetVersion(v string) *Event {
 	e.Version = v
 	return e
@@ -78,7 +78,7 @@ func (e *Events) Submit() error {
 	return err
 }
 
-// Append adds a events to the the collection
+// Append adds events to the the collection
 func (e *Events) Append(addition ...*Event) *Events {
 	for _, a := range addition {
 		*e = append(*e, *a)

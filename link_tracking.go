@@ -1,7 +1,7 @@
 package chatbase
 
 import (
-	"encoding/json"
+	"io"
 	"net/url"
 )
 
@@ -10,7 +10,7 @@ var (
 	clickEndpoint = "https://chatbase.com/api/click"
 )
 
-// Link describes a hyperlink that should be tracked using Chatbase
+// Link describes a hyperlink to be tracked using Chatbase
 type Link struct {
 	APIKey   string `json:"api_key"`
 	URL      string `json:"url"`
@@ -18,30 +18,23 @@ type Link struct {
 	Version  string `json:"version,omitempty"`
 }
 
-// LinkResponse contains the response to posting a click event
+// LinkResponse contains the response to submitting a link
 type LinkResponse struct {
 	Status Status `json:"status"`
 	Reason string `json:"reason,omitempty"`
 }
 
-// SetVersion adds an optional version parameter
+// SetVersion adds an optional "version" parameter to a link
 func (l *Link) SetVersion(v string) *Link {
 	l.Version = v
 	return l
 }
 
-// Submit tries to send the click event to Chatbase
+// Submit tries to send the link to Chatbase
 func (l *Link) Submit() (*LinkResponse, error) {
-	body, bodyErr := apiPost(clickEndpoint, l)
-	if bodyErr != nil {
-		return nil, bodyErr
-	}
-	defer body.Close()
-	response := LinkResponse{}
-	if err := json.NewDecoder(body).Decode(&response); err != nil {
-		return nil, err
-	}
-	return &response, nil
+	return newLinkResponse(func() (io.ReadCloser, error) {
+		return apiPost(clickEndpoint, l)
+	})
 }
 
 func (l *Link) String() string {

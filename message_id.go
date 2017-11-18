@@ -6,15 +6,15 @@ import (
 	"strconv"
 )
 
-// MessageID normalizes the IDs sent by Chatbase
+// MessageID is a named string type that normalizes the IDs sent by Chatbase
 type MessageID string
 
 // UnmarshalJSON distinguishes ints and strings and normalizes
 // both values into a string representation
 func (m *MessageID) UnmarshalJSON(b []byte) error {
-	var i int
+	var i int64
 	if err := json.Unmarshal(b, &i); err == nil {
-		*m = MessageID(strconv.Itoa(i))
+		*m = MessageID(strconv.FormatInt(i, 10))
 		return nil
 	}
 	var str string
@@ -27,4 +27,9 @@ func (m *MessageID) UnmarshalJSON(b []byte) error {
 
 func (m *MessageID) String() string {
 	return string(*m)
+}
+
+// Int returns the ID's int representation
+func (m *MessageID) Int() (int64, error) {
+	return strconv.ParseInt(m.String(), 10, 0)
 }

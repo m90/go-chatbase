@@ -10,7 +10,7 @@ var (
 	updateEndpoint = "https://chatbase.com/api/message/update"
 )
 
-// Update contains data to be updated about a message that already exists
+// Update contains data about an existing message that should be updated
 type Update struct {
 	APIKey     string `json:"-"`
 	MessageID  string `json:"-"`
@@ -20,13 +20,13 @@ type Update struct {
 	Version    string `json:"version,omitempty"`
 }
 
-// SetIntent adds an optional intent value to update
+// SetIntent adds an optional "intent" value to an update
 func (u *Update) SetIntent(i string) *Update {
 	u.Intent = i
 	return u
 }
 
-// SetNotHandled adds an optional not handled value to update
+// SetNotHandled adds an optional "not handled" value to an update
 func (u *Update) SetNotHandled(n bool) *Update {
 	u.NotHandled = ""
 	if n {
@@ -35,13 +35,13 @@ func (u *Update) SetNotHandled(n bool) *Update {
 	return u
 }
 
-// SetFeedback adds an optional feedback value to update
+// SetFeedback adds an optional "feedback" value to an update
 func (u *Update) SetFeedback(f string) *Update {
 	u.Feedback = f
 	return u
 }
 
-// SetVersion adds an optional version value to update
+// SetVersion adds an optional "version" value to an update
 func (u *Update) SetVersion(v string) *Update {
 	u.Version = v
 	return u
@@ -75,10 +75,10 @@ func (u *Update) Submit() (*UpdateResponse, error) {
 	return &responseData, nil
 }
 
-// UpdateResponse describes a Chatbase response to an update
+// UpdateResponse describes a Chatbase response to an update submission
 type UpdateResponse struct {
 	Error   []string `json:"error"`
 	Updated []string `json:"updated"`
 	Status  Status   `json:"status"`
-	Reason  string   `json:"string"`
+	Reason  string   `json:"string,omitempty"`
 }
