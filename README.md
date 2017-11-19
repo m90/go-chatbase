@@ -173,7 +173,7 @@ The [link tracking](https://chatbase.com/documentation/taps) allows handling of 
 
 ```go
 link := client.Link("https://golang.org/", chatbase.PlatformLine)
-trackableHREF := link.String()
+trackableHREF, err := link.Encode()
 response, err := link.Submit()
 if err != nil || !response.Status.OK() {
 	// handle error

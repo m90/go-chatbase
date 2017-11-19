@@ -36,7 +36,8 @@ func (l *Link) Submit() (*LinkResponse, error) {
 	})
 }
 
-func (l *Link) String() string {
+// Encode turns the link object into a URL
+func (l *Link) Encode() (string, error) {
 	params := map[string]string{
 		"api_key":  l.APIKey,
 		"url":      l.URL,
@@ -45,6 +46,5 @@ func (l *Link) String() string {
 	if l.Version != "" {
 		params["version"] = l.Version
 	}
-	u, _ := augmentURL(redirectURL, params)
-	return u
+	return augmentURL(redirectURL, params)
 }
