@@ -48,7 +48,10 @@ func newMessageResponse(thunk func() (io.ReadCloser, error)) (*MessageResponse, 
 	if res, ok := data.(*MessageResponse); ok {
 		return res, err
 	}
-	return nil, fmt.Errorf("%v was not of expected type", data)
+	if err == nil {
+		err = fmt.Errorf("%v was not of expected type", data)
+	}
+	return nil, err
 }
 
 func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse, error) {
@@ -56,7 +59,10 @@ func newMessagesResponse(thunk func() (io.ReadCloser, error)) (*MessagesResponse
 	if res, ok := data.(*MessagesResponse); ok {
 		return res, err
 	}
-	return nil, fmt.Errorf("%v was not of expected type", data)
+	if err == nil {
+		err = fmt.Errorf("%v was not of expected type", data)
+	}
+	return nil, err
 }
 
 func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error) {
@@ -64,7 +70,10 @@ func newLinkResponse(thunk func() (io.ReadCloser, error)) (*LinkResponse, error)
 	if res, ok := data.(*LinkResponse); ok {
 		return res, err
 	}
-	return nil, fmt.Errorf("%v was not of expected type", data)
+	if err == nil {
+		err = fmt.Errorf("%v was not of expected type", data)
+	}
+	return nil, err
 }
 
 func newUpdateResponse(thunk func() (io.ReadCloser, error)) (*UpdateResponse, error) {
@@ -72,7 +81,10 @@ func newUpdateResponse(thunk func() (io.ReadCloser, error)) (*UpdateResponse, er
 	if res, ok := data.(*UpdateResponse); ok {
 		return res, err
 	}
-	return nil, fmt.Errorf("%v was not of expected type", data)
+	if err == nil {
+		err = fmt.Errorf("%v was not of expected type", data)
+	}
+	return nil, err
 }
 
 func decodeInto(target interface{}, thunk func() (io.ReadCloser, error)) (interface{}, error) {

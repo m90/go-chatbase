@@ -22,9 +22,9 @@ Send a single message to Chatbase:
 client := chatbase.NewClient("MY-API-KEY")
 
 // calling Message requires passing of all required values
-message := client.Message(chatbase.MessageTypeAgent, "USER-ID", "telegram")
+message := client.Message(chatbase.MessageTypeAgent, "USER-ID", chatbase.PlatformTelegram)
 
-// optional values are attached lateron
+// optional values are added after creation
 message.SetMessage("I didn't understand that, sorry")
 
 // this can also be chained
@@ -32,6 +32,9 @@ message.SetIntent("fallback").SetNotHandled(true)
 
 // calling Submit will send the data to chatbase
 response, err := message.Submit()
+if err != nil || !response.Status.OK() {
+	// handle errors
+}
 ```
 
 ## Supported APIs
@@ -169,7 +172,7 @@ The [link tracking](https://chatbase.com/documentation/taps) allows handling of 
 #### `Link`
 
 ```go
-link := client.Link("https://golang.org/", "telegram")
+link := client.Link("https://golang.org/", chatbase.PlatformLine)
 trackableHREF := link.String()
 response, err := link.Submit()
 if err != nil || !response.Status.OK() {

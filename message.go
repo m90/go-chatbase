@@ -8,11 +8,35 @@ import (
 // MessageType describes the source of a message
 type MessageType string
 
-// types of messages used to identify the origin of
+// Types of messages used to identify the origin of
 // a message in Chatbase
 const (
 	UserType  MessageType = "user"
 	AgentType MessageType = "agent"
+)
+
+// A set of strings that can be used for specifying a message's platform.
+// These platforms will be recognized by Chatbase, but any other non-zero
+// custom string value like "Workplace" can be used as well
+const (
+	PlatformFacebook = "Facebook"
+	PlatformSMS      = "SMS"
+	PlatformWeb      = "Web"
+	PlatformAndroid  = "Android"
+	PlatformIOS      = "iOS"
+	PlatformActions  = "Actions"
+	PlatformAlexa    = "Alexa"
+	PlatformCortana  = "Cortana"
+	PlatformKik      = "Kik"
+	PlatformSkype    = "Skype"
+	PlatformTwitter  = "Twitter"
+	PlatformViber    = "Viber"
+	PlatformTelegram = "Telegram"
+	PlatformSlack    = "Slack"
+	PlatformWhatsApp = "WhatsApp"
+	PlatformWeChat   = "WeChat"
+	PlatformLine     = "Line"
+	PlatformKakao    = "Kakao"
 )
 
 var (

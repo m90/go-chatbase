@@ -1,5 +1,3 @@
-// Package chatbase provides a client and types for interacting with the
-// Chatbase bot analytics platform - https://chatbase.com
 package chatbase
 
 // Client wraps a Chatbase API Key and can be used to
