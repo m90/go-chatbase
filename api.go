@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	client = http.Client{Timeout: time.Duration(5 * time.Second)}
+	transport = &http.Transport{MaxIdleConns: 20, MaxIdleConnsPerHost: 20}
+	client = http.Client{Transport: transport, Timeout: time.Duration(5 * time.Second)}
 )
 
 func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
