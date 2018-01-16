@@ -11,9 +11,20 @@ import (
 )
 
 var (
-	transport = &http.Transport{MaxIdleConns: 20, MaxIdleConnsPerHost: 20}
-	client = http.Client{Transport: transport, Timeout: time.Duration(5 * time.Second)}
+	client = http.Client{}
 )
+
+// SetAPITransport allows setting a transport for the http.Client that is being used
+// for handling Chatbase API calls
+func SetAPITransport(t http.RoundTripper) {
+	client.Transport = t
+}
+
+// SetAPITimeout allows setting a timeout value for the http.Client that is being used
+// for handling Chatbase API calls
+func SetAPITimeout(t time.Duration) {
+	client.Timeout = t
+}
 
 func apiCall(method, endpoint string, v interface{}) (io.ReadCloser, error) {
 	payload, payloadErr := json.Marshal(v)
