@@ -3,11 +3,13 @@
 package chatbase_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	chatbase "github.com/m90/go-chatbase"
 )
@@ -40,6 +42,8 @@ func TestMain(m *testing.M) {
 
 func TestMessages(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
 		client := chatbase.New(apiKey)
 		message := client.UserMessage(userID, platform)
 		message.SetFeedback(true)
@@ -54,7 +58,7 @@ func TestMessages(t *testing.T) {
 		update := client.Update(msgRes.MessageID.String())
 		update.SetVersion("1.2.3")
 		update.SetNotHandled(true)
-		updateRes, updateErr := update.Submit()
+		updateRes, updateErr := update.SubmitWithContext(ctx)
 		if updateErr != nil {
 			t.Fatalf("Unexpected error %v", updateErr)
 		}
@@ -90,10 +94,12 @@ func TestMessages(t *testing.T) {
 
 func TestEvents(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
 		client := chatbase.New(apiKey)
 		ev := client.Event(userID, "send-an-event")
 		ev.SetPlatform(platform).AddProperty("is-this-a-test", true)
-		if err := ev.Submit(); err != nil {
+		if err := ev.SubmitWithContext(ctx); err != nil {
 			t.Fatalf("Unexpected error %v", err)
 		}
 	})
@@ -115,6 +121,8 @@ func TestEvents(t *testing.T) {
 
 func TestFacebookMessages(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
 		client := chatbase.New(apiKey)
 		payload, err := readFixture("testdata/facebook_single_payload.json")
 		if err != nil {
@@ -122,7 +130,7 @@ func TestFacebookMessages(t *testing.T) {
 		}
 		fbMessage := client.FacebookMessage(payload)
 		fbMessage.SetIntent("test-facebook")
-		response, responseErr := fbMessage.Submit()
+		response, responseErr := fbMessage.SubmitWithContext(ctx)
 		if responseErr != nil {
 			t.Fatalf("Unexpected error %v", responseErr)
 		}
@@ -131,7 +139,7 @@ func TestFacebookMessages(t *testing.T) {
 		}
 		update := client.Update(response.MessageID.String())
 		update.SetVersion("1.2.4")
-		updateRes, updateErr := update.Submit()
+		updateRes, updateErr := update.SubmitWithContext(ctx)
 		if updateErr != nil {
 			t.Fatalf("Unexpected error %v", updateErr)
 		}
@@ -198,10 +206,12 @@ func TestFacebookMessages(t *testing.T) {
 
 func TestLink(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
 		client := chatbase.New(apiKey)
 		click := client.Link("https://golang.org/", "integration-test")
 		click.SetVersion("9.8.7")
-		res, err := click.Submit()
+		res, err := click.SubmitWithContext(ctx)
 		if err != nil {
 			t.Fatalf("Unexpected error %v", err)
 		}

@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -86,6 +87,21 @@ func (f *FacebookMessage) Submit() (*MessageResponse, error) {
 	return postSingleFacebookItem(f, f.APIKey, facebookMessageEndpoint)
 }
 
+// SubmitWithContext tries to deliver a single Facebook message to chatbase
+// considering the given context's deadline
+func (f *FacebookMessage) SubmitWithContext(ctx context.Context) (*MessageResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return f.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessageResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
+}
+
 // FacebookMessages is a collection of FacecbookMessage
 type FacebookMessages []FacebookMessage
 
@@ -114,6 +130,21 @@ func (f *FacebookMessages) Submit() (*MessagesResponse, error) {
 	}
 	apiKey := (*f)[0].APIKey
 	return postMultipleFacebookItems(f, apiKey, facebookMessagesEndpoint)
+}
+
+// SubmitWithContext tries to deliver a single Facebook message to chatbase
+// considering the given context's deadline
+func (f *FacebookMessages) SubmitWithContext(ctx context.Context) (*MessagesResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return f.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessagesResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
 }
 
 func postFacebook(endpoint, apiKey string, v interface{}) (io.ReadCloser, error) {
@@ -193,6 +224,21 @@ func (f *FacebookRequestResponse) Submit() (*MessageResponse, error) {
 	return postSingleFacebookItem(f, f.APIKey, facebookRequestEndpoint)
 }
 
+// SubmitWithContext tries to deliver the pair to Chatbase
+// considering the given context's deadline
+func (f *FacebookRequestResponse) SubmitWithContext(ctx context.Context) (*MessageResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return f.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessageResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
+}
+
 // FacebookRequestResponses is a collection of FacebookRequestResponse
 type FacebookRequestResponses []FacebookRequestResponse
 
@@ -212,6 +258,21 @@ func (f *FacebookRequestResponses) Submit() (*MessagesResponse, error) {
 	}
 	apiKey := (*f)[0].APIKey
 	return postMultipleFacebookItems(f, apiKey, facebookRequestsEndpoint)
+}
+
+// SubmitWithContext tries to send the collection of request/response pairs to Chatbase
+// considering the given context's deadline
+func (f *FacebookRequestResponses) SubmitWithContext(ctx context.Context) (*MessagesResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return f.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessagesResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
 }
 
 // Append adds additional messages to the collection. The collection should not

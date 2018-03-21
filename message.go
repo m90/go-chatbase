@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 )
@@ -101,6 +102,21 @@ func (m *Message) Submit() (*MessageResponse, error) {
 	})
 }
 
+// SubmitWithContext tries to deliver the message to Chatbase
+// while considering the given context's deadline
+func (m *Message) SubmitWithContext(ctx context.Context) (*MessageResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return m.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessageResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
+}
+
 // MessageResponse describes a Chatbase response to the submission of
 // a single message. It is also used to represent the result of an item
 // of a collection of messages that have been submitted.
@@ -126,6 +142,21 @@ func (m *Messages) Submit() (*MessagesResponse, error) {
 	return newMessagesResponse(func() (io.ReadCloser, error) {
 		return apiPost(messagesEndpoint, m)
 	})
+}
+
+// SubmitWithContext tries to deliver the set of messages to Chatbase
+// while considering the given context's deadline
+func (m *Messages) SubmitWithContext(ctx context.Context) (*MessagesResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return m.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*MessagesResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
 }
 
 // Append adds messages to the the collection

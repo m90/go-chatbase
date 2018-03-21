@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -50,10 +51,16 @@ func (e *Event) AddProperty(name string, v interface{}) error {
 	return nil
 }
 
-// Submit tries to deliver the set of events to Chatbase
+// Submit tries to deliver the event to Chatbase
 func (e *Event) Submit() error {
 	_, err := apiPost(eventEndpoint, e)
 	return err
+}
+
+// SubmitWithContext tries to deliver the event to Chatbase
+// while considering the given context's deadline
+func (e *Event) SubmitWithContext(ctx context.Context) error {
+	return withContext(ctx, e.Submit)
 }
 
 // Events is a collection of Event
@@ -76,6 +83,12 @@ func (e Events) MarshalJSON() ([]byte, error) {
 func (e *Events) Submit() error {
 	_, err := apiPost(eventsEndpoint, e)
 	return err
+}
+
+// SubmitWithContext tries to deliver the set of events to Chatbase
+// while considering the context's deadline
+func (e *Events) SubmitWithContext(ctx context.Context) error {
+	return withContext(ctx, e.Submit)
 }
 
 // Append adds events to the the collection. The collection should not

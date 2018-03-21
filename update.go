@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"context"
 	"io"
 )
 
@@ -61,6 +62,21 @@ func (u *Update) Submit() (*UpdateResponse, error) {
 		}
 		return body, nil
 	})
+}
+
+// SubmitWithContext tries to deliver the update to Chatbase while
+// considering the given context's deadline
+func (u *Update) SubmitWithContext(ctx context.Context) (*UpdateResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return u.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*UpdateResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
 }
 
 // UpdateResponse describes a Chatbase response to an update submission

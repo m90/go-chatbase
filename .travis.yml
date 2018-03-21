@@ -3,8 +3,8 @@ language: go
 sudo: false
 
 go:
-  - 1.8
-  - 1.9
+  - '1.9'
+  - '1.10'
   - master
 matrix:
   allow_failures:
