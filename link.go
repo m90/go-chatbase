@@ -1,6 +1,7 @@
 package chatbase
 
 import (
+	"context"
 	"io"
 )
 
@@ -34,6 +35,21 @@ func (l *Link) Submit() (*LinkResponse, error) {
 	return newLinkResponse(func() (io.ReadCloser, error) {
 		return apiPost(clickEndpoint, l)
 	})
+}
+
+// SubmitWithContext tries to send the link to Chatbase
+// while considering the given context's deadline
+func (l *Link) SubmitWithContext(ctx context.Context) (*LinkResponse, error) {
+	data, err := resultWithContext(ctx, func() (interface{}, error) {
+		return l.Submit()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res, ok := data.(*LinkResponse); ok {
+		return res, nil
+	}
+	return nil, errBadData
 }
 
 // Encode turns the link object into a URL
