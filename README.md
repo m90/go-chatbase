@@ -19,7 +19,7 @@ Send a single message to Chatbase:
 
 ```go
 // a client is a wrapper around an chatbase API key
-client := chatbase.NewClient("MY-API-KEY")
+client := chatbase.New("MY-API-KEY")
 
 // calling Message requires passing of all required values
 message := client.Message(chatbase.MessageTypeAgent, "USER-ID", chatbase.PlatformTelegram)
