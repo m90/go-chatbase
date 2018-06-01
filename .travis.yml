@@ -1,13 +1,13 @@
 language: go
-
 sudo: false
-
 go:
-  - '1.9'
-  - '1.10'
-  - master
+- '1.9'
+- '1.10'
+- master
 matrix:
   allow_failures:
-    - go: master
-
+  - go: master
 script: make
+env:
+  matrix:
+    secure: nhXYBLitx2Bcrl9V9f1EdvteKOxZlOfOpmVKTMu0gMrvDol6kbzxqer++I2/RaUf9h4yKFHqQKvAok7Vjmcy/tXVwmPXe7o9KRe/lPFLvKoYjj06KBaWDnBsdL8dGxPhgwh+Jw9HRPFe877UpHwaAVFr/z1AjoNd+Sr75ugFPyaCF5AR9v3v3GZ49dntlLCB9mh2I7Hgm9UnVYwrCfwRke9jkhmvImBzbRcKLmeuQ1DoxLG0g35sUG1MdedjKtD4tuxauKRqw2r1530OWe4w+YLJTDaXPPdwENLoY/Ssb9S56CvNYIBdujGwfn9dW6oH+jb7C92URQP4Xz7tnYSpRbdJ60SfA7svCO81nvr4p9ixvq6hZ/d2L5zxrQIhsOskGbDqzmCyuTIbXUt6VquAXM8XqMEkZYhYRZHnLEO1xFrYb2vVENnba3Y4LzX1MZzsHS6Fyl6iNGyT8hMsdSDP1ev9W8Mb7C40dEUgfGNXcvJ7CAl4zpX824gOGI5rq7SvQw+kz/KBGZ5cUPiS+uEMLvm92Y0UiIAZyHOfaK2C41UDDNJIjURbNdn5OLpR9c6u2Sl/4XJXm8P9/U9HJjWrat92Y+JQLwbWjdXy21ib178xuSMlFhV9I/Wjo2FqcjSvXGTAW/tWp5BEVTKmq1P8TZGTZJaxjjCQUFbDQEorUeM=
