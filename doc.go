@@ -18,8 +18,13 @@ The primary entrypoint for interacting with Chatbase is a `Client` instance:
 
 	// calling Submit will send the data to chatbase
 	response, err := message.Submit()
-	if err != nil || !response.Status.OK() {
-		// handle errors
+	if err != nil {
+		// an error submitting the data occurred
+		fmt.Println(err)
+	} else if !response.Status.OK() {
+		// the data was submitted to ChatBase, but
+		// the response contained an error code
+		fmt.Println(response.Reason)
 	}
 
 For further usage instructions refer to the README.

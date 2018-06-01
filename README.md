@@ -32,8 +32,13 @@ message.SetIntent("fallback").SetNotHandled(true)
 
 // calling Submit will send the data to chatbase
 response, err := message.Submit()
-if err != nil || !response.Status.OK() {
-	// handle errors
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -49,8 +54,13 @@ The [generic message API](https://chatbase.com/documentation/generic) allows han
 message := client.Message(chatbase.UserType, "USER-ID", "messenger")
 message.SetMessage("How are you today?")
 response, err := message.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -64,8 +74,13 @@ for i := 1; i < 4; i++ {
 	messages.Append(message)
 }
 response, err := messages.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -75,8 +90,13 @@ if err != nil || !response.Status.OK() {
 update := client.Update("ID-OF-MESSAGE-TO-UPDATE")
 update.SetIntent("this-changed")
 response, err := update.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -90,8 +110,13 @@ The [Facebook Message API](https://chatbase.com/documentation/facebook) allows h
 message := client.FacebookMessage(facebookPayload)
 message.SetIntent("test-messenger")
 response, err := message.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -105,8 +130,13 @@ for _, msg := range listOfFacebookMessages {
 }
 
 response, err := messages.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -116,8 +146,13 @@ if err != nil || !response.Status.OK() {
 pair := client.FacebookRequestResponse(incomingMessage, respondingMessage)
 pair.SetIntent("test-messenger")
 response, err := pair.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -131,8 +166,13 @@ for _, msg := range listOfFacebookMessages {
 }
 
 response, err := pairs.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -146,8 +186,13 @@ The [Events API](https://chatbase.com/documentation/events) allows handling of `
 event := client.Event("USER-ID", "intent-name")
 event.SetPlatform("line").SetVersion("2.2.1")
 event.AddProperty("success", true)
-if err := event.Submit(); err != nil {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
@@ -175,8 +220,13 @@ The [link tracking](https://chatbase.com/documentation/taps) allows handling of 
 link := client.Link("https://golang.org/", chatbase.PlatformLine)
 trackableHREF, err := link.Encode()
 response, err := link.Submit()
-if err != nil || !response.Status.OK() {
-	// handle error
+if err != nil {
+	// an error submitting the data occurred
+	fmt.Println(err)
+} else if !response.Status.OK() {
+	// the data was submitted to ChatBase, but
+	// the response contained an error code
+	fmt.Println(response.Reason)
 }
 ```
 
