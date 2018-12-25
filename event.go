@@ -16,14 +16,14 @@ type Event struct {
 	APIKey     string          `json:"api_key"`
 	UserID     string          `json:"user_id"`
 	Intent     string          `json:"intent"`
-	TimeStamp  int             `json:"timestamp_millis,omitempty"`
+	TimeStamp  int64           `json:"timestamp_millis,omitempty"`
 	Platform   string          `json:"platform,omitempty"`
 	Version    string          `json:"version,omitempty"`
 	Properties []EventProperty `json:"properties"`
 }
 
 // SetTimeStamp adds an optional "timestamp" value to the event
-func (e *Event) SetTimeStamp(t int) *Event {
+func (e *Event) SetTimeStamp(t int64) *Event {
 	e.TimeStamp = t
 	return e
 }
