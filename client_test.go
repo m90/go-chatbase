@@ -17,7 +17,7 @@ func TestNewClient(t *testing.T) {
 func TestMessage_Client(t *testing.T) {
 	oldTimeStamp := TimeStamp
 	defer func() { TimeStamp = oldTimeStamp }()
-	TimeStamp = func() int64 { return 998877 }
+	TimeStamp = func() int { return 998877 }
 	c := New("foo-bar-baz")
 
 	t.Run("default", func(t *testing.T) {

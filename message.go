@@ -50,7 +50,7 @@ type Message struct {
 	APIKey     string      `json:"api_key"`
 	Type       MessageType `json:"type"`
 	UserID     string      `json:"user_id"`
-	TimeStamp  int64       `json:"time_stamp"`
+	TimeStamp  int         `json:"time_stamp"`
 	Platform   string      `json:"platform"`
 	Message    string      `json:"message,omitempty"`
 	Intent     string      `json:"intent,omitempty"`
@@ -90,7 +90,7 @@ func (m *Message) SetVersion(v string) *Message {
 }
 
 // SetTimeStamp overrides the message's "timestamp" value
-func (m *Message) SetTimeStamp(t int64) *Message {
+func (m *Message) SetTimeStamp(t int) *Message {
 	m.TimeStamp = t
 	return m
 }
