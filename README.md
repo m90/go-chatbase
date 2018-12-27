@@ -13,6 +13,12 @@ Use `go get`:
 $ go get github.com/m90/go-chatbase
 ```
 
+or if you're using [go modules](https://github.com/golang/go/wiki/Modules), just specify:
+
+```go
+import "github.com/m90/go-chatbase/v2"
+```
+
 ## Example
 
 Send a single message to Chatbase:
