@@ -57,6 +57,7 @@ type Message struct {
 	NotHandled bool        `json:"not_handled,omitempty"`
 	Feedback   bool        `json:"feedback,omitempty"`
 	Version    string      `json:"version,omitempty"`
+	SessionID  string      `json:"session_id,omitempty"`
 }
 
 // SetMessage adds an optional "message" value to a message
@@ -86,6 +87,12 @@ func (m *Message) SetFeedback(f bool) *Message {
 // SetVersion adds an optional "version" value to a message
 func (m *Message) SetVersion(v string) *Message {
 	m.Version = v
+	return m
+}
+
+// SetSessionID adds an optional "session id" value to a message
+func (m *Message) SetSessionID(s string) *Message {
+	m.SessionID = s
 	return m
 }
 
