@@ -26,8 +26,9 @@ func TestMessage_Setters(t *testing.T) {
 			NotHandled: true,
 			Feedback:   true,
 			Version:    "1.2.34",
+			SessionID:  "session-identifier",
 		}
-		m.SetMessage("Hello world!").SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.2.34").SetTimeStamp(111444)
+		m.SetMessage("Hello world!").SetIntent("test-things").SetNotHandled(true).SetFeedback(true).SetVersion("1.2.34").SetTimeStamp(111444).SetSessionID("session-identifier")
 		if !reflect.DeepEqual(expected, m) {
 			t.Errorf("Expected %#v, got %#v", expected, m)
 		}
